@@ -1,9 +1,9 @@
-package com.megatrans.megatransappbackend.Camiones.Controller;
+package com.megatrans.megatransappbackend.Unidad.Controller;
 
 import com.lowagie.text.DocumentException;
-import com.megatrans.megatransappbackend.Camiones.Entity.Camiones;
-import com.megatrans.megatransappbackend.Camiones.ReporteCamiones;
-import com.megatrans.megatransappbackend.Camiones.Service.CamionesService;
+import com.megatrans.megatransappbackend.Unidad.Entity.Unidad;
+import com.megatrans.megatransappbackend.Unidad.ReporteCamiones;
+import com.megatrans.megatransappbackend.Unidad.Service.UnidadService;
 import com.megatrans.megatransappbackend.dto.Mensaje;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -25,62 +25,45 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/camiones")
+@RequestMapping("/unidad")
 @CrossOrigin(origins = "http://localhost:4200")
-public class CamionesController {
+public class UnidadController {
 
     @Autowired
-    CamionesService camionesService;
+    UnidadService unidadService;
 
     @GetMapping("/lista")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('EMPL')")
-    public ResponseEntity<List<Camiones>> list() {
-        List<Camiones> list = camionesService.getAllCamiones();
+    public ResponseEntity<List<Unidad>> list() {
+        List<Unidad> list = unidadService.getAllUnidades();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
     @GetMapping("/detalles/{id}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('EMPL')")
-    public ResponseEntity<Camiones> getById(@PathVariable("id") int id) {
-        if (!camionesService.existsById(id))
+    public ResponseEntity<Unidad> getById(@PathVariable("id") int id) {
+        if (!unidadService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        Camiones producto = camionesService.getCamionById(id).get();
+        Unidad producto = unidadService.getUnidadById(id).get();
         return new ResponseEntity(producto, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<?> create(
-            @RequestParam("tipo") String tipo,
-            @RequestParam("marca") String marca,
-            @RequestParam("modelo") String modelo,
-            @RequestParam("placa") String placa,
-            @RequestParam("capacidad") Double capacidad,
-            @RequestParam("tipo_cajon") String tipo_cajon,
+
+            @RequestParam("imagenUrl") MultipartFile imagenUrl,
             @RequestParam("altura") Double altura,
             @RequestParam("ancho") Double ancho,
             @RequestParam("largo") Double largo,
-            @RequestParam("imagenUrl") MultipartFile imagenUrl,
-            @RequestParam("estado") boolean estado)
-
-    {
+            @RequestParam("tipo") String tipo,
+            @RequestParam("tipo_cajon") String tipo_cajon) {
 
         // Validaciones
         if (StringUtils.isBlank(tipo)) {
             return new ResponseEntity<>(new Mensaje("El tipo de camión es obligatorio"), HttpStatus.BAD_REQUEST);
         }
-        if (StringUtils.isBlank(marca)) {
-            return new ResponseEntity<>(new Mensaje("La marca es obligatoria"), HttpStatus.BAD_REQUEST);
-        }
-        if (StringUtils.isBlank(modelo)) {
-            return new ResponseEntity<>(new Mensaje("El modelo es obligatorio"), HttpStatus.BAD_REQUEST);
-        }
-        if (StringUtils.isBlank(placa) || placa.length() < 6 || placa.length() > 9) {
-            return new ResponseEntity<>(new Mensaje("La placa es obligatoria y debe tener entre 6 y 9 caracteres"), HttpStatus.BAD_REQUEST);
-        }
-        if (capacidad == null || capacidad <= 0) {
-            return new ResponseEntity<>(new Mensaje("La capacidad debe ser mayor a 0"), HttpStatus.BAD_REQUEST);
-        }
+
         if (StringUtils.isBlank(tipo_cajon)) {
             return new ResponseEntity<>(new Mensaje("El tipo de cajón es obligatorio"), HttpStatus.BAD_REQUEST);
         }
@@ -96,7 +79,6 @@ public class CamionesController {
         if (imagenUrl == null || imagenUrl.isEmpty()) {
             return new ResponseEntity<>(new Mensaje("La imagen del camión es obligatoria"), HttpStatus.BAD_REQUEST);
         }
-
         // Guardar la imagen
         String imgUrl;
         try {
@@ -105,9 +87,10 @@ public class CamionesController {
             return new ResponseEntity<>(new Mensaje("Error al guardar la imagen: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+
         // Crear y guardar el camión
-        Camiones camiones = new Camiones(tipo, marca, modelo, placa, capacidad, tipo_cajon, altura, ancho, largo, imgUrl, estado);
-        camionesService.addCamion(camiones);
+        Unidad unidad = new Unidad(imgUrl, altura, largo, ancho, tipo, tipo_cajon);
+        unidadService.addUnidad(unidad);
 
         return new ResponseEntity<>(new Mensaje("Camión creado correctamente"), HttpStatus.OK);
     }
@@ -128,38 +111,21 @@ public class CamionesController {
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(
             @PathVariable("id") int id,
-            @RequestParam("tipo") String tipo,
-            @RequestParam("marca") String marca,
-            @RequestParam("modelo") String modelo,
-            @RequestParam("placa") String placa,
-            @RequestParam("capacidad") Double capacidad,
-            @RequestParam("tipo_cajon") String tipo_cajon,
+            @RequestParam(value = "imagenUrl", required = false) MultipartFile imagenUrl,
             @RequestParam("altura") Double altura,
             @RequestParam("ancho") Double ancho,
             @RequestParam("largo") Double largo,
-            @RequestParam(value = "imagenUrl", required = false) MultipartFile imagen,
-            @RequestParam("estado") boolean estado) {
+            @RequestParam("tipo") String tipo,
+            @RequestParam("tipo_cajon") String tipo_cajon) {
 
         // Verificar si el camión existe
-        if (!camionesService.existsById(id)) {
+        if (!unidadService.existsById(id)) {
             return new ResponseEntity<>(new Mensaje("No existe un camión con ese ID"), HttpStatus.NOT_FOUND);
         }
 
         // Validaciones de campos
         if (StringUtils.isBlank(tipo)) {
             return new ResponseEntity<>(new Mensaje("El tipo de camión es obligatorio"), HttpStatus.BAD_REQUEST);
-        }
-        if (StringUtils.isBlank(marca)) {
-            return new ResponseEntity<>(new Mensaje("La marca es obligatoria"), HttpStatus.BAD_REQUEST);
-        }
-        if (StringUtils.isBlank(modelo)) {
-            return new ResponseEntity<>(new Mensaje("El modelo es obligatorio"), HttpStatus.BAD_REQUEST);
-        }
-        if (StringUtils.isBlank(placa) || placa.length() < 6 || placa.length() > 8) {
-            return new ResponseEntity<>(new Mensaje("La placa es obligatoria y debe tener entre 6 y 8 caracteres"), HttpStatus.BAD_REQUEST);
-        }
-        if (capacidad == null || capacidad <= 0) {
-            return new ResponseEntity<>(new Mensaje("La capacidad debe ser mayor a 0"), HttpStatus.BAD_REQUEST);
         }
         if (StringUtils.isBlank(tipo_cajon)) {
             return new ResponseEntity<>(new Mensaje("El tipo de cajón es obligatorio"), HttpStatus.BAD_REQUEST);
@@ -175,26 +141,22 @@ public class CamionesController {
         }
 
         // Obtener el camión existente
-        Camiones camiones = camionesService.getCamionById(id).get();
-        camiones.setTipo(tipo);
-        camiones.setMarca(marca);
-        camiones.setModelo(modelo);
-        camiones.setPlaca(placa);
-        camiones.setCapacidad(capacidad);
-        camiones.setTipo_cajon(tipo_cajon);
-        camiones.setAltura(altura);
-        camiones.setAncho(ancho);
-        camiones.setLargo(largo);
-        camiones.setEstado(estado);
+        Unidad unidad = unidadService.getUnidadById(id).get();
+        unidad.setTipo(tipo);
+        unidad.setTipo_cajon(tipo_cajon);
+        unidad.setAltura(altura);
+        unidad.setAncho(ancho);
+        unidad.setLargo(largo);
+
 
         // Si se proporciona una nueva imagen, guárdala y actualiza la URL
-        if (imagen != null && !imagen.isEmpty()) {
-            String imagenUrl = guardarImagen(imagen);
-            camiones.setImagenUrl(imagenUrl);
+        if (imagenUrl != null && !imagenUrl.isEmpty()) {
+            String imagen = guardarImagen(imagenUrl);
+            unidad.setImagenUrl(imagen);
         }
 
         // Guardar el camión actualizado
-        camionesService.addCamion(camiones);
+        unidadService.addUnidad(unidad);
         return new ResponseEntity<>(new Mensaje("Camión actualizado correctamente"), HttpStatus.OK);
     }
 
@@ -202,28 +164,28 @@ public class CamionesController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") int id) {
-        if (!camionesService.existsById(id))
+        if (!unidadService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        camionesService.deleteCamion(id);
+        unidadService.deleteUnidad(id);
         return new ResponseEntity(new Mensaje("Camion eliminado"), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/exportarPDF")
-    public void exportarListadoDeEmpleadosEnPDF(HttpServletResponse response) throws DocumentException, IOException {
-        response.setContentType("application/pdf");
-
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-        String fechaActual = dateFormatter.format(new Date());
-
-        String cabecera = "Content-Disposition";
-        String valor = "attachment; filename=INGRESOS_" + fechaActual + ".pdf";
-
-        response.setHeader(cabecera, valor);
-
-        List<Camiones> camionesList = camionesService.getAllCamiones();
-
-        ReporteCamiones exporter = new ReporteCamiones(camionesList);
-        exporter.exportarReporte(response);
-    }
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @GetMapping("/exportarPDF")
+//    public void exportarListadoDeEmpleadosEnPDF(HttpServletResponse response) throws DocumentException, IOException {
+//        response.setContentType("application/pdf");
+//
+//        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+//        String fechaActual = dateFormatter.format(new Date());
+//
+//        String cabecera = "Content-Disposition";
+//        String valor = "attachment; filename=INGRESOS_" + fechaActual + ".pdf";
+//
+//        response.setHeader(cabecera, valor);
+//
+//        List<Unidad> unidadList = unidadService.getAllUnidades();
+//
+//        ReporteCamiones exporter = new ReporteCamiones(unidadList);
+//        exporter.exportarReporte(response);
+//    }
 }

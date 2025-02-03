@@ -13,19 +13,17 @@ public class UsuarioPrincipal implements UserDetails {
     private String nombre;
     private String apellido;
     private String telefono;
-    private String foto;
+    private String identificacion;
     private String nombreUsuario;
-    private String email;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UsuarioPrincipal(String nombre, String apellido, String nombreUsuario, String email, String telefono, String foto, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UsuarioPrincipal(String nombre, String apellido, String nombreUsuario, String identificacion, String telefono, String password, Collection<? extends GrantedAuthority> authorities) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.nombreUsuario = nombreUsuario;
-        this.email = email;
+        this.identificacion = identificacion;
         this.telefono = telefono;
-        this.foto = foto;
         this.password = password;
         this.authorities = authorities;
     }
@@ -34,7 +32,7 @@ public class UsuarioPrincipal implements UserDetails {
         List<GrantedAuthority> authorities =
                 usuario.getRoles().stream().map(rol -> new SimpleGrantedAuthority(rol
                         .getRolNombre().name())).collect(Collectors.toList());
-        return new UsuarioPrincipal(usuario.getNombre(), usuario.getApellido(), usuario.getNombreUsuario(), usuario.getEmail(), usuario.getTelefono(), usuario.getFoto(), usuario.getPassword(), authorities);
+        return new UsuarioPrincipal(usuario.getNombre(), usuario.getApellido(), usuario.getNombreUsuario(), usuario.getIdentificacion(), usuario.getTelefono(), usuario.getPassword(), authorities);
     }
 
     @Override
@@ -76,8 +74,8 @@ public class UsuarioPrincipal implements UserDetails {
         return nombre;
     }
 
-    public String getEmail() {
-        return email;
+    public String getIdentificacion() {
+        return identificacion;
     }
 
     public String getApellido() {
@@ -88,7 +86,4 @@ public class UsuarioPrincipal implements UserDetails {
         return telefono;
     }
 
-    public String getFoto() {
-        return foto;
-    }
 }

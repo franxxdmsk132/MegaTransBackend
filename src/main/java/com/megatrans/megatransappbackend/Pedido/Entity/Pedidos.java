@@ -1,6 +1,6 @@
 package com.megatrans.megatransappbackend.Pedido.Entity;
 
-import com.megatrans.megatransappbackend.Camiones.Entity.Camiones;
+import com.megatrans.megatransappbackend.Unidad.Entity.Unidad;
 import com.megatrans.megatransappbackend.Security.entity.Usuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ public class Pedidos {
     @ManyToOne
     private Usuario usuario;
     @ManyToOne
-    private Camiones camiones;
+    private Unidad unidad;
     @Column(nullable = false)
     private double latitud;
 

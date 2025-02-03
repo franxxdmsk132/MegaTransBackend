@@ -1,7 +1,7 @@
 package com.megatrans.megatransappbackend.Pedido.Service;
 
-import com.megatrans.megatransappbackend.Camiones.Entity.Camiones;
-import com.megatrans.megatransappbackend.Camiones.Repository.CamionesRepository;
+import com.megatrans.megatransappbackend.Unidad.Entity.Unidad;
+import com.megatrans.megatransappbackend.Unidad.Repository.UnidadRepository;
 import com.megatrans.megatransappbackend.Pedido.DTO.PedidosDto;
 import com.megatrans.megatransappbackend.Pedido.Entity.Pedidos;
 import com.megatrans.megatransappbackend.Pedido.Repository.PedidosRepository;
@@ -20,7 +20,7 @@ public class PedidosService {
     @Autowired
     private PedidosRepository pedidosRepository;
     @Autowired
-    private CamionesRepository camionesRepository;
+    private UnidadRepository unidadRepository;
     @Autowired
     private UsuarioRepository usuarioRepository;
 
@@ -46,14 +46,14 @@ public class PedidosService {
         Pedidos pedido = pedidosRepository.findById(id).orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
 
         // Recuperar el camión por ID
-        Camiones camion = camionesRepository.findById(pedidoDto.getCamionId())
+        Unidad camion = unidadRepository.findById(pedidoDto.getCamionId())
                 .orElseThrow(() -> new RuntimeException("Camión no encontrado"));
 
         pedido.setDireccion(pedidoDto.getDireccion());
         pedido.setLatitud(pedidoDto.getLatitud());
         pedido.setLongitud(pedidoDto.getLongitud());
         pedido.setEstado(pedidoDto.getEstado());
-        pedido.setCamiones(camion); // Asignar el camión recuperado
+        pedido.setUnidad(camion); // Asignar el camión recuperado
 
         pedido = pedidosRepository.save(pedido);
         return convertirEntityADto(pedido);
@@ -70,7 +70,7 @@ public class PedidosService {
         PedidosDto dto = new PedidosDto();
         dto.setId(pedido.getId());
         dto.setUsuarioId(pedido.getUsuario().getId());
-        dto.setCamionId(pedido.getCamiones().getId());
+        dto.setCamionId(pedido.getUnidad().getId());
         dto.setDireccion(pedido.getDireccion());
         dto.setLatitud(pedido.getLatitud());
         dto.setLongitud(pedido.getLongitud());
@@ -88,10 +88,10 @@ public class PedidosService {
         // Asociar usuario y camión
         pedido.setUsuario(usuario);
         // Buscar el camión por ID
-        Camiones camiones = camionesRepository.findById((Integer) dto.getCamionId())
+        Unidad unidad = unidadRepository.findById((Integer) dto.getCamionId())
                 .orElseThrow(() -> new RuntimeException("Camión no encontrado"));
 
-        pedido.setCamiones(camiones);
+        pedido.setUnidad(unidad);
         pedido.setDireccion(dto.getDireccion());
         pedido.setLatitud(dto.getLatitud());
         pedido.setLongitud(dto.getLongitud());

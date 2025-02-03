@@ -1,5 +1,7 @@
 package com.megatrans.megatransappbackend;
 
+import com.megatrans.megatransappbackend.Security.entity.Rol;
+import com.megatrans.megatransappbackend.Security.enums.RolNombre;
 import com.megatrans.megatransappbackend.Security.service.RolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -25,6 +27,6 @@ public class CreateRoles implements CommandLineRunner {
 //        rolService.save(rolAdmin);
 //        rolService.save(rolUser);
 //        rolService.save(rolEmpl);
-//
+
     }
 }

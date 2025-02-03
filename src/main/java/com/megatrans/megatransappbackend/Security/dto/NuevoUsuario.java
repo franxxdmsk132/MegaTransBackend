@@ -14,13 +14,12 @@ public class NuevoUsuario {
     private String nombre;
     @NotNull
     private String apellido;
-    @Email
-    private String email;
+    @NotNull
+    private String identificacion;
     @NotBlank
     private String telefono;
 
-    private String foto;
-    @NotBlank
+    @Email
     private String nombreUsuario;
 
     @NotBlank
@@ -51,12 +50,12 @@ public class NuevoUsuario {
         this.nombreUsuario = nombreUsuario;
     }
 
-    public String getEmail() {
-        return email;
+    public String getIdentificacion() {
+        return identificacion;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setIdentificacion(String identificacion) {
+        this.identificacion = identificacion;
     }
 
     public String getPassword() {
@@ -91,11 +90,4 @@ public class NuevoUsuario {
         this.telefono = telefono;
     }
 
-    public String getFoto() {
-        return foto;
-    }
-
-    public void setFoto(String foto) {
-        this.foto = foto;
-    }
 }

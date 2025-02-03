@@ -1,4 +1,4 @@
-package com.megatrans.megatransappbackend.Camiones.Controller;
+package com.megatrans.megatransappbackend.Unidad.Controller;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;

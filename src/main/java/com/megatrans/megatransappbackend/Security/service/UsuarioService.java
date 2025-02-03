@@ -37,9 +37,9 @@ public class UsuarioService {
         return usuarioRepository.findByRoles_RolNombre(rolNombre);
     }
 
-    public boolean existsByEmail(String email){
-        return usuarioRepository.existsByEmail(email);
-    }
+//    public boolean existsByEmail(String email){
+//        return usuarioRepository.existsByEmail(email);
+//    }
 
     public void save(Usuario usuario){
         usuarioRepository.save(usuario);

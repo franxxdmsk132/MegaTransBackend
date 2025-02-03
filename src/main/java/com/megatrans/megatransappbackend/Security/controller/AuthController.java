@@ -65,15 +65,14 @@ public class AuthController {
     public ResponseEntity<?> nuevo(
             @RequestParam String nombre,
             @RequestParam String apellido,
-            @RequestParam String email,
+            @RequestParam String identificacion,
             @RequestParam String telefono,
-            @RequestParam MultipartFile foto,
             @RequestParam String nombreUsuario,
             @RequestParam String password,
             @RequestParam(required = false) String roles) {
 
         // Validaciones manuales
-        if (nombre.isEmpty() || apellido.isEmpty() || email.isEmpty() || telefono.isEmpty() || nombreUsuario.isEmpty() || password.isEmpty()) {
+        if (nombre.isEmpty() || apellido.isEmpty() || identificacion.isEmpty() || telefono.isEmpty() || nombreUsuario.isEmpty() || password.isEmpty()) {
             return new ResponseEntity<>(new Mensaje("Campos no pueden estar vacíos"), HttpStatus.BAD_REQUEST);
         }
 
@@ -81,14 +80,13 @@ public class AuthController {
             return new ResponseEntity<>(new Mensaje("Ese usuario ya existe"), HttpStatus.BAD_REQUEST);
         }
 
-        if (usuarioService.existsByEmail(email)) {
-            return new ResponseEntity<>(new Mensaje("Ese email ya existe"), HttpStatus.BAD_REQUEST);
-        }
+//        if (usuarioService.existsByEmail(email)) {
+//            return new ResponseEntity<>(new Mensaje("Ese email ya existe"), HttpStatus.BAD_REQUEST);
+//        }
 
-        // Guardar la imagen
-        String fotoUrl = guardarImagenUsuario(foto);
 
-        Usuario usuario = new Usuario(nombre, apellido, email, telefono, fotoUrl, nombreUsuario, passwordEncoder.encode(password));
+
+        Usuario usuario = new Usuario(nombre, apellido, identificacion, telefono, nombreUsuario, passwordEncoder.encode(password));
 
         // Asignar el rol basado en el parámetro 'roles'
         Set<Rol> rolesAsignados = new HashSet<>();
@@ -111,27 +109,24 @@ public class AuthController {
     public ResponseEntity<?> nuevoEmpleado(
             @RequestParam("nombre") String nombre,
             @RequestParam("apellido") String apellido,
-            @RequestParam("email") String email,
+            @RequestParam("identificacion") String identificacion,
             @RequestParam("telefono") String telefono,
-            @RequestParam("foto") MultipartFile foto,
             @RequestParam("nombreUsuario") String nombreUsuario,
             @RequestParam("password") String password
     ) {
 
         // Validaciones manuales
-        if (nombre.isEmpty() || apellido.isEmpty() || email.isEmpty() || telefono.isEmpty() || nombreUsuario.isEmpty() || password.isEmpty()) {
+        if (nombre.isEmpty() || apellido.isEmpty() || identificacion.isEmpty() || telefono.isEmpty() || nombreUsuario.isEmpty() || password.isEmpty()) {
             return new ResponseEntity<>(new Mensaje("Campos no pueden estar vacíos"), HttpStatus.BAD_REQUEST);
         }
         if (usuarioService.existsByNombreUsuario(nombreUsuario))
             return new ResponseEntity<>(new Mensaje("ese nombre de usuario ya existe"), HttpStatus.BAD_REQUEST);
-        if (usuarioService.existsByEmail(email))
-            return new ResponseEntity<>(new Mensaje("ese email ya existe"), HttpStatus.BAD_REQUEST);
+//        if (usuarioService.existsByEmail(email))
+//            return new ResponseEntity<>(new Mensaje("ese email ya existe"), HttpStatus.BAD_REQUEST);
 
-        // Guardar la imagen
-        String fotoUrl = guardarImagenUsuario(foto);
 
         // Crear el usuario con los datos proporcionados y la URL de la imagen
-        Usuario usuario = new Usuario(nombre, apellido, email, telefono, fotoUrl, nombreUsuario, passwordEncoder.encode(password));
+        Usuario usuario = new Usuario(nombre, apellido, identificacion, telefono, nombreUsuario, passwordEncoder.encode(password));
 
         // Asignar el rol de empleado
         Set<Rol> roles = new HashSet<>();
@@ -178,9 +173,8 @@ public class AuthController {
                     userDetails.getUsername(),
                     usuario.getNombre(),
                     usuario.getApellido(),
-                    usuario.getEmail(),
+                    usuario.getIdentificacion(),
                     usuario.getTelefono(),
-                    usuario.getFoto(),
                     userDetails.getAuthorities()  // Usar directamente la colección de authorities
             );
 
@@ -209,10 +203,9 @@ public class AuthController {
                     nuevoUsuario.setId(usuario.getId());
                     nuevoUsuario.setNombre(usuario.getNombre());
                     nuevoUsuario.setNombreUsuario(usuario.getNombreUsuario());
-                    nuevoUsuario.setEmail(usuario.getEmail());
+                    nuevoUsuario.setIdentificacion(usuario.getIdentificacion());
                     nuevoUsuario.setApellido(usuario.getApellido());
                     nuevoUsuario.setTelefono(usuario.getTelefono());
-                    nuevoUsuario.setFoto(usuario.getFoto());
                     nuevoUsuario.setPassword(usuario.getPassword());
 
                     // Convirtiendo Set<Rol> a Set<String> roles
@@ -232,7 +225,7 @@ public class AuthController {
             @PathVariable Integer id,
             @RequestParam("nombre") String nombre,
             @RequestParam("nombreUsuario") String nombreUsuario,
-            @RequestParam("email") String email,
+            @RequestParam("identificacion") String identificacion,
             @RequestParam("apellido") String apellido,
             @RequestParam("telefono") String telefono,
             @RequestParam("password") String password,
@@ -240,7 +233,7 @@ public class AuthController {
 
 
         // Validaciones manuales
-        if (nombre.isEmpty() || apellido.isEmpty() || email.isEmpty() || telefono.isEmpty() || nombreUsuario.isEmpty() || password.isEmpty()) {
+        if (nombre.isEmpty() || apellido.isEmpty() || identificacion.isEmpty() || telefono.isEmpty() || nombreUsuario.isEmpty() || password.isEmpty()) {
             return new ResponseEntity<>(new Mensaje("Campos no pueden estar vacíos"), HttpStatus.BAD_REQUEST);
         }
         if (!usuarioService.existsById(id))
@@ -252,19 +245,14 @@ public class AuthController {
                 !usuario.getNombreUsuario().equals(nombreUsuario))
             return new ResponseEntity<>(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
-        if (usuarioService.existsByEmail(email) &&
-                !usuario.getEmail().equals(email))
-            return new ResponseEntity<>(new Mensaje("ese email ya existe"), HttpStatus.BAD_REQUEST);
+//        if (usuarioService.existsByEmail(email) &&
+//                !usuario.getEmail().equals(email))
+//            return new ResponseEntity<>(new Mensaje("ese email ya existe"), HttpStatus.BAD_REQUEST);
 
         usuario.setNombre(nombre);
         usuario.setApellido(apellido);
-        usuario.setEmail(email);
+        usuario.setIdentificacion(identificacion);
         usuario.setTelefono(telefono);
-        // Si se proporciona una nueva foto, actualizarla
-        if (foto != null && !foto.isEmpty()) {
-            String fotoUrl = guardarImagenUsuario(foto);
-            usuario.setFoto(fotoUrl);
-        }
         usuario.setNombreUsuario(nombreUsuario);
 
         if (password != null && !password.isEmpty()) {
@@ -307,9 +295,8 @@ public class AuthController {
         nuevoUsuario.setId(usuario.getId());
         nuevoUsuario.setNombre(usuario.getNombre());
         nuevoUsuario.setApellido(usuario.getApellido());
-        nuevoUsuario.setEmail(usuario.getEmail());
+        nuevoUsuario.setIdentificacion(usuario.getIdentificacion());
         nuevoUsuario.setTelefono(usuario.getTelefono());
-        nuevoUsuario.setFoto(usuario.getFoto());
         nuevoUsuario.setNombreUsuario(usuario.getNombreUsuario());
         nuevoUsuario.setPassword(usuario.getPassword());
 
@@ -334,9 +321,8 @@ public class AuthController {
         perfil.setId(usuario.getId());
         perfil.setNombre(usuario.getNombre());
         perfil.setApellido(usuario.getApellido());
-        perfil.setEmail(usuario.getEmail());
+        perfil.setIdentificacion(usuario.getIdentificacion());
         perfil.setTelefono(usuario.getTelefono());
-        perfil.setFoto(usuario.getFoto());
         perfil.setNombreUsuario(usuario.getNombreUsuario());
         perfil.setPassword(usuario.getPassword());
 
@@ -350,18 +336,18 @@ public class AuthController {
     }
 
 
-    // Método para guardar la imagen en el servidor
-    private String guardarImagenUsuario(MultipartFile imagen) {
-        try {
-            String nombreArchivo = System.currentTimeMillis() + "_" + imagen.getOriginalFilename();
-            Path rutaArchivo = Paths.get("usersimg").resolve(nombreArchivo).toAbsolutePath();
-            Files.copy(imagen.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
-
-            return "/usersimg/" + nombreArchivo;
-        } catch (IOException e) {
-            throw new RuntimeException("Error al guardar la imagen", e);
-        }
-    }
+//    // Método para guardar la imagen en el servidor
+//    private String guardarImagenUsuario(MultipartFile imagen) {
+//        try {
+//            String nombreArchivo = System.currentTimeMillis() + "_" + imagen.getOriginalFilename();
+//            Path rutaArchivo = Paths.get("usersimg").resolve(nombreArchivo).toAbsolutePath();
+//            Files.copy(imagen.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
+//
+//            return "/usersimg/" + nombreArchivo;
+//        } catch (IOException e) {
+//            throw new RuntimeException("Error al guardar la imagen", e);
+//        }
+//    }
 
 
 }

@@ -10,19 +10,17 @@ public class JwtDto {
     private String nombreUsuario;
     private String nombre;
     private String apellido;
-    private String email;
+    private String identificacion;
     private String telefono;
-    private String foto;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public JwtDto(String token, String nombreUsuario,String nombre,String apellido,String email,String telefono,String foto, Collection<? extends GrantedAuthority> authorities) {
+    public JwtDto(String token, String nombreUsuario,String nombre,String apellido,String identificacion,String telefono,Collection<? extends GrantedAuthority> authorities) {
         this.token = token;
         this.nombreUsuario = nombreUsuario;
         this.nombre = nombre;
         this.apellido = apellido;
-        this.email = email;
+        this.identificacion = identificacion;
         this.telefono = telefono;
-        this.foto = foto;
         this.authorities = authorities;
     }
 
@@ -74,12 +72,12 @@ public class JwtDto {
         this.apellido = apellido;
     }
 
-    public String getEmail() {
-        return email;
+    public String getIdentificacion() {
+        return identificacion;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setIdentificacion(String identificacion) {
+        this.identificacion = identificacion;
     }
 
     public String getTelefono() {
@@ -90,11 +88,4 @@ public class JwtDto {
         this.telefono = telefono;
     }
 
-    public String getFoto() {
-        return foto;
-    }
-
-    public void setFoto(String foto) {
-        this.foto = foto;
-    }
 }
