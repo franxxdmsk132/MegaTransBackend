@@ -3,6 +3,7 @@ package com.megatrans.megatransappbackend.Transporte_Mudanza.DTO;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -26,7 +27,7 @@ public class DetalleTransporteDTO {
     private EstadoTransporte estado;
     private TipoServicio tipoServicio;
     private Boolean estibaje;
-    private Date fecha;
+    private LocalDate fecha;
     private String numOrden;
     private Pago pago;
     private DireccionDTO direccionOrigen;  // DireccionOrigen como DTO

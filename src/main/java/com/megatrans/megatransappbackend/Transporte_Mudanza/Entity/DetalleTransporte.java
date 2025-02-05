@@ -4,6 +4,7 @@ import com.megatrans.megatransappbackend.Security.entity.Usuario;
 import com.megatrans.megatransappbackend.Unidad.Entity.Unidad;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -26,7 +27,9 @@ public class DetalleTransporte {
 
     private String estado;
 
-    private Date fecha;
+    @CreationTimestamp // Se generará automáticamente
+    @Column(updatable = false)
+    private LocalDate fecha;
 
     private Boolean estibaje;
 
