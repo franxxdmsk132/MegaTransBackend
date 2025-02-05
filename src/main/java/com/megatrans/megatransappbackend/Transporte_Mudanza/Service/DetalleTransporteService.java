@@ -31,6 +31,21 @@ public class DetalleTransporteService {
     }
 
     public DetalleTransporte guardar(DetalleTransporteDTO dto) {
+
+        Optional<String> ultimoNumeroOpt = detalleTransporteRepository.findAll()
+                .stream()
+                .map(DetalleTransporte::getNumOrden)
+                .max(String::compareTo);
+        int nuevoNumero = 1;
+        if (ultimoNumeroOpt.isPresent()) {
+            String ultimoNumero = ultimoNumeroOpt.get().replace("TM", "");
+            nuevoNumero = Integer.parseInt(ultimoNumero) + 1;
+        }
+        String nuevoNumOrden = String.format("TM%3d", nuevoNumero);
+
+        if (detalleTransporteRepository.findByNumOrden(nuevoNumOrden).isPresent()){
+            throw new RuntimeException("El numero de orden "+nuevoNumOrden+ " ya esta registrado.");
+        }
         // Crear y guardar la dirección de origen
         Direccion origen = new Direccion();
         origen.setBarrio(dto.getDireccionOrigen().getBarrio());
@@ -69,7 +84,7 @@ public class DetalleTransporteService {
         detalle.setEstado(dto.getEstado().name());
         detalle.setEstibaje(dto.getEstibaje());
         detalle.setFecha(dto.getFecha());
-        detalle.setNumOrden(dto.getNumOrden());
+        detalle.setNumOrden(nuevoNumOrden);
         detalle.setPago(dto.getPago().name());
         detalle.setDirOrigen(origen);
         detalle.setDirDestino(destino);
@@ -78,9 +93,23 @@ public class DetalleTransporteService {
 
         return detalleTransporteRepository.save(detalle);
     }
+    // Método para generar el próximo numOrden
+    public String generarNuevoNumOrden() {
+        Optional<String> lastNumOrden = detalleTransporteRepository.findLastNumOrden();
 
+        if (lastNumOrden.isPresent()) {
+            // Extraer el número actual y aumentar en 1
+            String lastOrden = lastNumOrden.get();
+            int lastNumber = Integer.parseInt(lastOrden.substring(2)); // Extrae el número ignorando 'TM'
+            int nextNumber = lastNumber + 1;
 
-
+            // Formatear con ceros a la izquierda (mínimo 5 dígitos)
+            return String.format("TM%05d", nextNumber);
+        } else {
+            // Si no hay registros, comenzar con TM00001
+            return "TM00001";
+        }
+    }
 
     public Optional<DetalleTransporte> obtenerPorId(Long id) {
         return detalleTransporteRepository.findById(id);

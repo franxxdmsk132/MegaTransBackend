@@ -46,6 +46,7 @@ public class DetalleTransporteController {
     // POST para crear un nuevo detalle de transporte
     @PostMapping
     public ResponseEntity<DetalleTransporte> crearDetalleTransporte(@RequestBody DetalleTransporteDTO dto, Authentication authentication) {
+
         // Obtener el nombre de usuario desde la sesión (esto asume que usas Spring Security)
         String username = authentication.getName();
 
@@ -80,6 +81,9 @@ public class DetalleTransporteController {
         Unidad unidad = unidadRepository.findById(dto.getUnidadId()).orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
 //        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId()).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
+        // Generar automáticamente el numOrden
+        String numOrden = detalleTransporteService.generarNuevoNumOrden();
+
         // Crear el detalle de transporte
         DetalleTransporte detalle = new DetalleTransporte();
         detalle.setCantidadEstibaje(dto.getCantidadEstibaje());
@@ -88,7 +92,7 @@ public class DetalleTransporteController {
         detalle.setTipoServicio(dto.getTipoServicio().name());
         detalle.setEstibaje(dto.getEstibaje());
         detalle.setFecha(dto.getFecha());
-        detalle.setNumOrden(dto.getNumOrden());
+        detalle.setNumOrden(numOrden);
         detalle.setPago(dto.getPago().name());
         detalle.setDirOrigen(direccionOrigen);  // Asociar la dirección de origen
         detalle.setDirDestino(direccionDestino);  // Asociar la dirección de destino
