@@ -16,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -127,16 +129,20 @@ public class DetalleTransporteController {
 //    }
 // Endpoint para buscar por numOrden
     @GetMapping("/buscar")
-    public ResponseEntity<DetalleTransporte> buscarPorNumOrden(@RequestParam String numOrden) {
-        // Buscar el detalle de transporte por numOrden
+    public ResponseEntity<Map<String, Object>> buscarPorNumOrden(@RequestParam String numOrden) {
         Optional<DetalleTransporte> detalle = detalleTransporteRepository.findByNumOrden(numOrden);
+        Map<String, Object> response = new HashMap<>();
 
         if (detalle.isPresent()) {
-            return ResponseEntity.ok(detalle.get()); // Devolver el detalle encontrado
+            response.put("mensaje", "Número de orden " + numOrden + " encontrado.");
+            response.put("detalle", detalle.get());
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.notFound().build(); // Si no se encuentra, devolver un 404
+            response.put("error", "Error: No se encontró el número de orden: " + numOrden);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
+
 
     // Eliminar un DetalleTransporte
     @DeleteMapping("/{id}")
