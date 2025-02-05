@@ -144,4 +144,13 @@ public class DetalleTransporteController {
         detalleTransporteService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<String> actualizarEstado(@PathVariable Long id, @RequestParam String estado) {
+        boolean actualizado = detalleTransporteService.actualizarEstado(id, estado);
+        if (actualizado) {
+            return ResponseEntity.ok("Estado actualizado correctamente.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró el detalle de transporte.");
+        }
+    }
 }

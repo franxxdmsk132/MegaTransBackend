@@ -110,6 +110,18 @@ public class DetalleTransporteService {
             return "TM00001";
         }
     }
+    public boolean actualizarEstado(Long id, String nuevoEstado) {
+        Optional<DetalleTransporte> optionalDetalle = detalleTransporteRepository.findById(id);
+
+        if (optionalDetalle.isPresent()) {
+            DetalleTransporte detalle = optionalDetalle.get();
+            detalle.setEstado(nuevoEstado);
+            detalleTransporteRepository.save(detalle);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public Optional<DetalleTransporte> obtenerPorId(Long id) {
         return detalleTransporteRepository.findById(id);
