@@ -22,7 +22,7 @@ public class DetalleTransporteDTO {
         MERCADERIA,DISTRIBUCION,MUDANZA
     }
 
-    private int cantidadEstibaje;
+    private Integer cantidadEstibaje;
     private String descripcionProducto;
     private EstadoTransporte estado;
     private TipoServicio tipoServicio;
@@ -33,6 +33,6 @@ public class DetalleTransporteDTO {
     private DireccionDTO direccionOrigen;  // DireccionOrigen como DTO
     private DireccionDTO direccionDestino; // DireccionDestino como DTO
 
-    private int unidadId;
-    private int usuarioId;
+    private Integer unidadId;
+    private Integer usuarioId;
 }

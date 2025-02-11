@@ -13,6 +13,7 @@ import com.megatrans.megatransappbackend.Unidad.Repository.UnidadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -150,6 +151,8 @@ public class DetalleTransporteController {
         detalleTransporteService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<String> actualizarEstado(@PathVariable Long id, @RequestParam String estado) {
         boolean actualizado = detalleTransporteService.actualizarEstado(id, estado);
