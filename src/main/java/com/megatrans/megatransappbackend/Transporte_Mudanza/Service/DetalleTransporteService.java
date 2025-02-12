@@ -32,20 +32,6 @@ public class DetalleTransporteService {
 
     public DetalleTransporte guardar(DetalleTransporteDTO dto) {
 
-        Optional<String> ultimoNumeroOpt = detalleTransporteRepository.findAll()
-                .stream()
-                .map(DetalleTransporte::getNumOrden)
-                .max(String::compareTo);
-        int nuevoNumero = 1;
-        if (ultimoNumeroOpt.isPresent()) {
-            String ultimoNumero = ultimoNumeroOpt.get().replace("TM", "");
-            nuevoNumero = Integer.parseInt(ultimoNumero) + 1;
-        }
-        String nuevoNumOrden = String.format("TM%3d", nuevoNumero);
-
-        if (detalleTransporteRepository.findByNumOrden(nuevoNumOrden).isPresent()){
-            throw new RuntimeException("El numero de orden "+nuevoNumOrden+ " ya esta registrado.");
-        }
         // Crear y guardar la dirección de origen
         Direccion origen = new Direccion();
         origen.setBarrio(dto.getDireccionOrigen().getBarrio());
@@ -73,7 +59,7 @@ public class DetalleTransporteService {
         // Buscar la unidad y el usuario
         Unidad unidad = unidadRepository.findById(dto.getUnidadId())
                 .orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId().getId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         // Crear y guardar el detalle de transporte
@@ -84,7 +70,7 @@ public class DetalleTransporteService {
         detalle.setEstado(dto.getEstado().name());
         detalle.setEstibaje(dto.getEstibaje());
         detalle.setFecha(dto.getFecha());
-        detalle.setNumOrden(nuevoNumOrden);
+        detalle.setNumOrden(generarNuevoNumOrden());
         detalle.setPago(dto.getPago().name());
         detalle.setDirOrigen(origen);
         detalle.setDirDestino(destino);

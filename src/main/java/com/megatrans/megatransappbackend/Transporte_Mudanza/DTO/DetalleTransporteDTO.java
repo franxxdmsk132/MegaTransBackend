@@ -1,10 +1,10 @@
 package com.megatrans.megatransappbackend.Transporte_Mudanza.DTO;
 
+import com.megatrans.megatransappbackend.Security.entity.Usuario;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -34,5 +34,5 @@ public class DetalleTransporteDTO {
     private DireccionDTO direccionDestino; // DireccionDestino como DTO
 
     private Integer unidadId;
-    private Integer usuarioId;
+    private Usuario usuarioId;
 }

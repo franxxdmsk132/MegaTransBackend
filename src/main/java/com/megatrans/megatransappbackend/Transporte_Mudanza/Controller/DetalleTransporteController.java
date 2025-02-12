@@ -162,4 +162,14 @@ public class DetalleTransporteController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró el detalle de transporte.");
         }
     }
+    // Guardar un nuevo detalle de transporte
+    @PostMapping("/nuevo")
+    public ResponseEntity<DetalleTransporte> guardarDetalle(@RequestBody DetalleTransporteDTO dto) {
+        try {
+            DetalleTransporte nuevoDetalle = detalleTransporteService.guardar(dto);
+            return new ResponseEntity<>(nuevoDetalle, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.megatrans.megatransappbackend.Security.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.antlr.v4.runtime.misc.NotNull;
 
@@ -27,6 +28,7 @@ public class Usuario {
     private String nombreUsuario;
 
     @NotNull
+    @JsonIgnore
     private String password;
 
 
