@@ -91,7 +91,7 @@ public class DetalleTransporteController {
         DetalleTransporte detalle = new DetalleTransporte();
         detalle.setCantidadEstibaje(dto.getCantidadEstibaje());
         detalle.setDescripcionProducto(dto.getDescripcionProducto());
-        detalle.setEstado(dto.getEstado().name());
+        detalle.setEstado("PENDIENTE");
         detalle.setTipoServicio(dto.getTipoServicio().name());
         detalle.setEstibaje(dto.getEstibaje());
         detalle.setFecha(dto.getFecha());
@@ -114,6 +114,7 @@ public class DetalleTransporteController {
         List<DetalleTransporte> detalles = detalleTransporteService.listar();
         return ResponseEntity.ok(detalles);
     }
+
 
     // Obtener un DetalleTransporte por ID
     @GetMapping("/{id}")
@@ -139,9 +140,10 @@ public class DetalleTransporteController {
             response.put("detalle", detalle.get());
             return ResponseEntity.ok(response);
         } else {
-            response.put("error", "Error: No se encontró el número de orden: " + numOrden);
+            response.put("error", "Número de orden no encontrado: " + numOrden);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
+
     }
 
 
@@ -162,6 +164,7 @@ public class DetalleTransporteController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró el detalle de transporte.");
         }
     }
+
     // Guardar un nuevo detalle de transporte
     @PostMapping("/nuevo")
     public ResponseEntity<DetalleTransporte> guardarDetalle(@RequestBody DetalleTransporteDTO dto) {
@@ -171,5 +174,34 @@ public class DetalleTransporteController {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+
+    @GetMapping("/filtrados")
+    public ResponseEntity<List<DetalleTransporte>> listarDetallesTransporte(Authentication authentication) {
+        // Obtener el nombre de usuario desde la sesión
+        String username = authentication.getName();
+
+        // Buscar el usuario autenticado en la base de datos
+        Usuario usuario = usuarioRepository.findByNombreUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Obtener el rol del usuario
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+        boolean isEmpleado = authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_EMPL"));
+
+        List<DetalleTransporte> detalles;
+
+        if (isAdmin || isEmpleado) {
+            // Si es ADMIN o EMPLEADO, obtener todos los detalles
+            detalles = detalleTransporteService.listar();
+        } else {
+            // Si es USUARIO, obtener solo los detalles asociados a ese usuario
+            detalles = detalleTransporteRepository.findByUsuario(usuario);
+        }
+
+        return ResponseEntity.ok(detalles);
     }
 }
