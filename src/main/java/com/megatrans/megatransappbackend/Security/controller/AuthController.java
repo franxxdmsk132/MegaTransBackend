@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -36,6 +37,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -163,8 +165,9 @@ public class AuthController {
             // Obtener el usuario desde el servicio
             Usuario usuario = usuarioService.getByNombreUsuario(userDetails.getUsername())
                     .orElseThrow(() -> {
+                        // Si el usuario no existe
                         logger.error("Usuario no encontrado: {}", userDetails.getUsername());
-                        return new RuntimeException("Usuario no encontrado");
+                        return new RuntimeException("Usuario no encontrado"); // Este bloque es importante para manejar el caso
                     });
 
             // Construir la respuesta con el JWT y detalles del usuario
@@ -178,18 +181,23 @@ public class AuthController {
                     userDetails.getAuthorities()  // Usar directamente la colección de authorities
             );
 
-            return new ResponseEntity<>(jwtDto, HttpStatus.OK);
-        } catch (AuthenticationException e) {
-            logger.error("Error de autenticación: ", e);
-            return new ResponseEntity<>(new Mensaje("Credenciales incorrectas"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(jwtDto, HttpStatus.OK);  // Login exitoso
+
+        } catch (BadCredentialsException e) {
+            // Si la contraseña es incorrecta
+            logger.error("Credenciales incorrectas: ", e);
+            return new ResponseEntity<>(new Mensaje("Contraseña incorrecta"), HttpStatus.UNAUTHORIZED);
         } catch (RuntimeException e) {
-            logger.error("Error en el login: ", e);
-            return new ResponseEntity<>(new Mensaje("Usuario no encontrado"), HttpStatus.NOT_FOUND);
+            // Si el usuario no existe o hay un error al obtenerlo
+            logger.error("Usuario no encontrado: ", e);
+            return new ResponseEntity<>(new Mensaje("Usuario no registrado"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
+            // Si hay cualquier otro error
             logger.error("Error en el servidor: ", e);
             return new ResponseEntity<>(new Mensaje("Error en el servidor"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
 
@@ -311,12 +319,12 @@ public class AuthController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPL') or hasRole('USER')")
     @GetMapping("/perfil/{username}")
-    public ResponseEntity<?> obtenerPerfilPorUsername(@PathVariable String username) {
-        // Buscar el usuario en la base de datos
+    public ResponseEntity<?> obtenerPerfil(@PathVariable String username) {
+        // Obtener el usuario desde el servicio usando el nombre de usuario
         Usuario usuario = usuarioService.getByNombreUsuario(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Crear el DTO de perfil
+        // Construir el objeto de respuesta con la información del usuario
         NuevoUsuario perfil = new NuevoUsuario();
         perfil.setId(usuario.getId());
         perfil.setNombre(usuario.getNombre());
@@ -324,16 +332,17 @@ public class AuthController {
         perfil.setIdentificacion(usuario.getIdentificacion());
         perfil.setTelefono(usuario.getTelefono());
         perfil.setNombreUsuario(usuario.getNombreUsuario());
-        perfil.setPassword(usuario.getPassword());
 
-        // Convertir roles a formato de String
+        // Convirtiendo Set<Rol> a Set<String> para devolver los roles del usuario
         Set<String> roles = usuario.getRoles().stream()
                 .map(rol -> rol.getRolNombre().name())
                 .collect(Collectors.toSet());
         perfil.setRoles(roles);
 
+        // Devolver la información del perfil en la respuesta
         return new ResponseEntity<>(perfil, HttpStatus.OK);
     }
+
 
 
 //    // Método para guardar la imagen en el servidor
@@ -348,6 +357,64 @@ public class AuthController {
 //            throw new RuntimeException("Error al guardar la imagen", e);
 //        }
 //    }
+@PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('EMPL')")
+@PutMapping("/changePass/{username}")
+public ResponseEntity<?> cambiarContrasena(
+        @PathVariable String username,
+        @RequestBody Map<String, String> requestBody // Se recibe un JSON con password y newPassword
+) {
+    String password = requestBody.get("password");
+    String newPassword = requestBody.get("newPassword");
 
+    if (password == null || newPassword == null || password.isEmpty() || newPassword.isEmpty()) {
+        return new ResponseEntity<>(new Mensaje("Las contraseñas no pueden estar vacías"), HttpStatus.BAD_REQUEST);
+    }
+
+    Usuario usuario = usuarioService.getByNombreUsuario(username).orElse(null);
+    if (usuario == null) {
+        return new ResponseEntity<>(new Mensaje("Usuario no encontrado"), HttpStatus.NOT_FOUND);
+    }
+
+    if (!passwordEncoder.matches(password, usuario.getPassword())) {
+        return new ResponseEntity<>(new Mensaje("Contraseña actual incorrecta"), HttpStatus.FORBIDDEN);
+    }
+
+    if (newPassword.length() < 6) {
+        return new ResponseEntity<>(new Mensaje("La nueva contraseña debe tener al menos 6 caracteres"), HttpStatus.BAD_REQUEST);
+    }
+
+    usuario.setPassword(passwordEncoder.encode(newPassword));
+    usuarioService.save(usuario);
+
+    return new ResponseEntity<>(new Mensaje("Contraseña actualizada con éxito"), HttpStatus.OK);
+}
+
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('EMPL')")
+    @PutMapping("/usuario/{username}")
+    public ResponseEntity<?> actualizarUsuario(
+            @PathVariable String username,
+            @RequestBody Usuario usuarioActualizado
+    ) {
+        // Verificar si el usuario existe
+        Usuario usuario = usuarioService.getByNombreUsuario(username).orElse(null);
+        if (usuario == null) {
+            return new ResponseEntity<>(new Mensaje("Usuario no encontrado"), HttpStatus.NOT_FOUND);
+        }
+
+        // Actualizar los campos del usuario con los valores del request body
+        if (usuarioActualizado.getNombre() != null && !usuarioActualizado.getNombre().isEmpty())
+            usuario.setNombre(usuarioActualizado.getNombre());
+        if (usuarioActualizado.getApellido() != null && !usuarioActualizado.getApellido().isEmpty())
+            usuario.setApellido(usuarioActualizado.getApellido());
+        if (usuarioActualizado.getIdentificacion() != null && !usuarioActualizado.getIdentificacion().isEmpty())
+            usuario.setIdentificacion(usuarioActualizado.getIdentificacion());
+        if (usuarioActualizado.getTelefono() != null && !usuarioActualizado.getTelefono().isEmpty())
+            usuario.setTelefono(usuarioActualizado.getTelefono());
+
+        // Guardar los cambios en la base de datos
+        usuarioService.save(usuario);
+        return new ResponseEntity<>(new Mensaje("Usuario actualizado correctamente"), HttpStatus.OK);
+    }
 
 }
