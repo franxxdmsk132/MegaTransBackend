@@ -22,6 +22,8 @@ public class Usuario {
     @NotNull
     private String telefono;
 
+    private String nombreComercial;
+
 
     @NotNull
     @Column(unique = true)
@@ -43,12 +45,13 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(@NotNull String nombre, @NotNull String apellido, @NotNull String identificacion, @NotNull String telefono, String nombreUsuario, @NotNull String password) {
+    public Usuario(@NotNull String nombre, @NotNull String apellido, @NotNull String identificacion, @NotNull String telefono,String nombreComercial, String nombreUsuario, @NotNull String password) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.nombreUsuario = nombreUsuario;
         this.identificacion = identificacion;
         this.telefono = telefono;
+        this.nombreComercial = nombreComercial;
         this.password = password;
     }
 
@@ -119,4 +122,18 @@ public class Usuario {
     public void setIdentificacion(String identificacion) {
         this.identificacion = identificacion;
     }
+
+    public String getNombreComercial() {
+        return nombreComercial;
+    }
+
+    public void setNombreComercial(String nombreComercial) {
+        this.nombreComercial = nombreComercial;
+    }
 }
+
+
+
+
+
+

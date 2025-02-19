@@ -12,15 +12,18 @@ public class JwtDto {
     private String apellido;
     private String identificacion;
     private String telefono;
+    private String nombreComercial;
+
     private Collection<? extends GrantedAuthority> authorities;
 
-    public JwtDto(String token, String nombreUsuario,String nombre,String apellido,String identificacion,String telefono,Collection<? extends GrantedAuthority> authorities) {
+    public JwtDto(String token, String nombreUsuario,String nombre,String apellido,String identificacion,String telefono,String nombreComercial,Collection<? extends GrantedAuthority> authorities) {
         this.token = token;
         this.nombreUsuario = nombreUsuario;
         this.nombre = nombre;
         this.apellido = apellido;
         this.identificacion = identificacion;
         this.telefono = telefono;
+        this.nombreComercial = nombreComercial;
         this.authorities = authorities;
     }
 
@@ -88,4 +91,11 @@ public class JwtDto {
         this.telefono = telefono;
     }
 
+    public String getNombreComercial() {
+        return nombreComercial;
+    }
+
+    public void setNombreComercial(String nombreComercial) {
+        this.nombreComercial = nombreComercial;
+    }
 }

@@ -67,6 +67,7 @@ public class AuthController {
     public ResponseEntity<?> nuevo(
             @RequestParam String nombre,
             @RequestParam String apellido,
+            @RequestParam String nombreComercial,
             @RequestParam String identificacion,
             @RequestParam String telefono,
             @RequestParam String nombreUsuario,
@@ -82,13 +83,13 @@ public class AuthController {
             return new ResponseEntity<>(new Mensaje("Ese usuario ya existe"), HttpStatus.BAD_REQUEST);
         }
 
-//        if (usuarioService.existsByEmail(email)) {
-//            return new ResponseEntity<>(new Mensaje("Ese email ya existe"), HttpStatus.BAD_REQUEST);
-//        }
+        if (usuarioService.existsByNombreComercial(nombreComercial)) {
+            return new ResponseEntity<>(new Mensaje("Ese nombre Comercial ya existe"), HttpStatus.BAD_REQUEST);
+        }
 
 
 
-        Usuario usuario = new Usuario(nombre, apellido, identificacion, telefono, nombreUsuario, passwordEncoder.encode(password));
+        Usuario usuario = new Usuario(nombre, apellido, identificacion, telefono, nombreComercial,nombreUsuario, passwordEncoder.encode(password));
 
         // Asignar el rol basado en el parámetro 'roles'
         Set<Rol> rolesAsignados = new HashSet<>();
@@ -113,9 +114,12 @@ public class AuthController {
             @RequestParam("apellido") String apellido,
             @RequestParam("identificacion") String identificacion,
             @RequestParam("telefono") String telefono,
+            @RequestParam("nombreComercial") String nombre_comercial,
             @RequestParam("nombreUsuario") String nombreUsuario,
-            @RequestParam("password") String password
-    ) {
+            @RequestParam("password")  String password
+
+
+            ) {
 
         // Validaciones manuales
         if (nombre.isEmpty() || apellido.isEmpty() || identificacion.isEmpty() || telefono.isEmpty() || nombreUsuario.isEmpty() || password.isEmpty()) {
@@ -123,12 +127,12 @@ public class AuthController {
         }
         if (usuarioService.existsByNombreUsuario(nombreUsuario))
             return new ResponseEntity<>(new Mensaje("ese nombre de usuario ya existe"), HttpStatus.BAD_REQUEST);
-//        if (usuarioService.existsByEmail(email))
-//            return new ResponseEntity<>(new Mensaje("ese email ya existe"), HttpStatus.BAD_REQUEST);
+        if (usuarioService.existsByNombreComercial(nombre_comercial))
+            return new ResponseEntity<>(new Mensaje("ese nombre Comercial ya existe"), HttpStatus.BAD_REQUEST);
 
 
         // Crear el usuario con los datos proporcionados y la URL de la imagen
-        Usuario usuario = new Usuario(nombre, apellido, identificacion, telefono, nombreUsuario, passwordEncoder.encode(password));
+        Usuario usuario = new Usuario(nombre, apellido, identificacion, telefono,nombre_comercial, nombreUsuario, passwordEncoder.encode(password));
 
         // Asignar el rol de empleado
         Set<Rol> roles = new HashSet<>();
@@ -178,6 +182,7 @@ public class AuthController {
                     usuario.getApellido(),
                     usuario.getIdentificacion(),
                     usuario.getTelefono(),
+                    usuario.getNombreComercial(),
                     userDetails.getAuthorities()  // Usar directamente la colección de authorities
             );
 
@@ -213,6 +218,7 @@ public class AuthController {
                     nuevoUsuario.setNombreUsuario(usuario.getNombreUsuario());
                     nuevoUsuario.setIdentificacion(usuario.getIdentificacion());
                     nuevoUsuario.setApellido(usuario.getApellido());
+                    nuevoUsuario.setNombreComercial(usuario.getNombreComercial());
                     nuevoUsuario.setTelefono(usuario.getTelefono());
                     nuevoUsuario.setPassword(usuario.getPassword());
 
@@ -236,8 +242,10 @@ public class AuthController {
             @RequestParam("identificacion") String identificacion,
             @RequestParam("apellido") String apellido,
             @RequestParam("telefono") String telefono,
-            @RequestParam("password") String password,
-            @RequestParam(value = "foto", required = false) MultipartFile foto) {
+            @RequestParam("nombreComercial") String nombre_comercial,
+            @RequestParam("password") String password
+//            @RequestParam(value = "foto", required = false) MultipartFile foto
+    ) {
 
 
         // Validaciones manuales
@@ -253,14 +261,15 @@ public class AuthController {
                 !usuario.getNombreUsuario().equals(nombreUsuario))
             return new ResponseEntity<>(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
-//        if (usuarioService.existsByEmail(email) &&
-//                !usuario.getEmail().equals(email))
-//            return new ResponseEntity<>(new Mensaje("ese email ya existe"), HttpStatus.BAD_REQUEST);
+        if (usuarioService.existsByNombreComercial(nombre_comercial) &&
+                !usuario.getNombreComercial().equals(nombre_comercial))
+            return new ResponseEntity<>(new Mensaje("ese nombre comercial ya existe"), HttpStatus.BAD_REQUEST);
 
         usuario.setNombre(nombre);
         usuario.setApellido(apellido);
         usuario.setIdentificacion(identificacion);
         usuario.setTelefono(telefono);
+        usuario.setNombreComercial(nombre_comercial);
         usuario.setNombreUsuario(nombreUsuario);
 
         if (password != null && !password.isEmpty()) {
@@ -305,6 +314,7 @@ public class AuthController {
         nuevoUsuario.setApellido(usuario.getApellido());
         nuevoUsuario.setIdentificacion(usuario.getIdentificacion());
         nuevoUsuario.setTelefono(usuario.getTelefono());
+        nuevoUsuario.setNombreComercial(usuario.getNombreComercial());
         nuevoUsuario.setNombreUsuario(usuario.getNombreUsuario());
         nuevoUsuario.setPassword(usuario.getPassword());
 
@@ -329,6 +339,7 @@ public class AuthController {
         perfil.setId(usuario.getId());
         perfil.setNombre(usuario.getNombre());
         perfil.setApellido(usuario.getApellido());
+        perfil.setNombreComercial(usuario.getNombreComercial());
         perfil.setIdentificacion(usuario.getIdentificacion());
         perfil.setTelefono(usuario.getTelefono());
         perfil.setNombreUsuario(usuario.getNombreUsuario());
@@ -411,10 +422,17 @@ public ResponseEntity<?> cambiarContrasena(
             usuario.setIdentificacion(usuarioActualizado.getIdentificacion());
         if (usuarioActualizado.getTelefono() != null && !usuarioActualizado.getTelefono().isEmpty())
             usuario.setTelefono(usuarioActualizado.getTelefono());
-
+        if (usuarioActualizado.getNombreComercial() != null && !usuarioActualizado.getNombreComercial().isEmpty())
+            usuario.setNombreComercial(usuarioActualizado.getNombreComercial());
         // Guardar los cambios en la base de datos
         usuarioService.save(usuario);
         return new ResponseEntity<>(new Mensaje("Usuario actualizado correctamente"), HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<String> obtenerMensaje() {
+        String mensaje = "Hola SSL";
+        return ResponseEntity.ok(mensaje);
     }
 
 }

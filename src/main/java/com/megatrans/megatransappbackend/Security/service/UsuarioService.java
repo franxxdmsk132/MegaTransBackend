@@ -33,6 +33,9 @@ public class UsuarioService {
     public boolean existsByNombreUsuario(String nombreUsuario){
         return usuarioRepository.existsByNombreUsuario(nombreUsuario);
     }
+    public boolean existsByNombreComercial(String nombreComercial){
+        return usuarioRepository.existsByNombreComercial(nombreComercial);
+    }
     public List<Usuario> getUsuariosByRol(RolNombre rolNombre) {
         return usuarioRepository.findByRoles_RolNombre(rolNombre);
     }

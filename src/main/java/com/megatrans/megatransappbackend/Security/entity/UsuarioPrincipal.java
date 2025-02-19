@@ -13,17 +13,19 @@ public class UsuarioPrincipal implements UserDetails {
     private String nombre;
     private String apellido;
     private String telefono;
+    private String nombreComercial;
     private String identificacion;
     private String nombreUsuario;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UsuarioPrincipal(String nombre, String apellido, String nombreUsuario, String identificacion, String telefono, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UsuarioPrincipal(String nombre, String apellido, String nombreUsuario, String identificacion, String telefono,String nombreComercial, String password, Collection<? extends GrantedAuthority> authorities) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.nombreUsuario = nombreUsuario;
         this.identificacion = identificacion;
         this.telefono = telefono;
+        this.nombreComercial = nombreComercial;
         this.password = password;
         this.authorities = authorities;
     }
@@ -32,7 +34,7 @@ public class UsuarioPrincipal implements UserDetails {
         List<GrantedAuthority> authorities =
                 usuario.getRoles().stream().map(rol -> new SimpleGrantedAuthority(rol
                         .getRolNombre().name())).collect(Collectors.toList());
-        return new UsuarioPrincipal(usuario.getNombre(), usuario.getApellido(), usuario.getNombreUsuario(), usuario.getIdentificacion(), usuario.getTelefono(), usuario.getPassword(), authorities);
+        return new UsuarioPrincipal(usuario.getNombre(), usuario.getApellido(), usuario.getNombreUsuario(), usuario.getIdentificacion(), usuario.getTelefono(), usuario.getNombreComercial(), usuario.getPassword(), authorities);
     }
 
     @Override
@@ -86,4 +88,11 @@ public class UsuarioPrincipal implements UserDetails {
         return telefono;
     }
 
+    public String getNombreComercial() {
+        return nombreComercial;
+    }
+
+    public void setNombreComercial(String nombreComercial) {
+        this.nombreComercial = nombreComercial;
+    }
 }
