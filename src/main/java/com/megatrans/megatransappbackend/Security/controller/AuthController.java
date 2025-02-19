@@ -83,9 +83,9 @@ public class AuthController {
             return new ResponseEntity<>(new Mensaje("Ese usuario ya existe"), HttpStatus.BAD_REQUEST);
         }
 
-        if (usuarioService.existsByNombreComercial(nombreComercial)) {
-            return new ResponseEntity<>(new Mensaje("Ese nombre Comercial ya existe"), HttpStatus.BAD_REQUEST);
-        }
+//        if (usuarioService.existsByNombreComercial(nombreComercial)) {
+//            return new ResponseEntity<>(new Mensaje("Ese nombre Comercial ya existe"), HttpStatus.BAD_REQUEST);
+//        }
 
 
 
@@ -127,8 +127,8 @@ public class AuthController {
         }
         if (usuarioService.existsByNombreUsuario(nombreUsuario))
             return new ResponseEntity<>(new Mensaje("ese nombre de usuario ya existe"), HttpStatus.BAD_REQUEST);
-        if (usuarioService.existsByNombreComercial(nombre_comercial))
-            return new ResponseEntity<>(new Mensaje("ese nombre Comercial ya existe"), HttpStatus.BAD_REQUEST);
+//        if (usuarioService.existsByNombreComercial(nombre_comercial))
+//            return new ResponseEntity<>(new Mensaje("ese nombre Comercial ya existe"), HttpStatus.BAD_REQUEST);
 
 
         // Crear el usuario con los datos proporcionados y la URL de la imagen
@@ -261,9 +261,9 @@ public class AuthController {
                 !usuario.getNombreUsuario().equals(nombreUsuario))
             return new ResponseEntity<>(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
-        if (usuarioService.existsByNombreComercial(nombre_comercial) &&
-                !usuario.getNombreComercial().equals(nombre_comercial))
-            return new ResponseEntity<>(new Mensaje("ese nombre comercial ya existe"), HttpStatus.BAD_REQUEST);
+//        if (usuarioService.existsByNombreComercial(nombre_comercial) &&
+//                !usuario.getNombreComercial().equals(nombre_comercial))
+//            return new ResponseEntity<>(new Mensaje("ese nombre comercial ya existe"), HttpStatus.BAD_REQUEST);
 
         usuario.setNombre(nombre);
         usuario.setApellido(apellido);
