@@ -1,7 +1,6 @@
 package com.megatrans.megatransappbackend.Security.dto;
 
 
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -18,6 +17,8 @@ public class NuevoUsuario {
     private String identificacion;
     @NotBlank
     private String telefono;
+
+    private String nombreComercial;
 
     @Email
     private String nombreUsuario;
@@ -90,4 +91,11 @@ public class NuevoUsuario {
         this.telefono = telefono;
     }
 
+    public String getNombreComercial() {
+        return nombreComercial;
+    }
+
+    public void setNombreComercial(String nombreComercial) {
+        this.nombreComercial = nombreComercial;
+    }
 }
