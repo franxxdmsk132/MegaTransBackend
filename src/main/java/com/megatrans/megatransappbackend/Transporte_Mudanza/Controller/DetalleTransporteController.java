@@ -156,14 +156,15 @@ public class DetalleTransporteController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<String> actualizarEstado(@PathVariable Long id, @RequestParam String estado) {
-        boolean actualizado = detalleTransporteService.actualizarEstado(id, estado);
+    public ResponseEntity<String> actualizarEstado(@PathVariable Long id, @RequestBody DetalleTransporte estado) {
+        boolean actualizado = detalleTransporteService.actualizarEstado(id, estado.getEstado());
         if (actualizado) {
             return ResponseEntity.ok("Estado actualizado correctamente.");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró el detalle de transporte.");
         }
     }
+
 
     // Guardar un nuevo detalle de transporte
     @PostMapping("/nuevo")
