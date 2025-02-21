@@ -1,11 +1,14 @@
 package com.megatrans.megatransappbackend.Encomiendas.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.megatrans.megatransappbackend.Security.entity.Usuario;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -22,22 +25,25 @@ public class DetalleEncomienda {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    @CreationTimestamp // Se generará automáticamente
+    @CreationTimestamp
     @Column(updatable = false)
     private LocalDate fecha;
 
-    private String dir_remitente;
-    private String nombre_d;
-    private String apellido_d;
-    private String identificacion_d;
-    private String telf_beneficiario;
-    private String telf_encargado;
-    private String correo_d;
-    private String referencia_d;
-    private String tipo_entrega;
+    private String dirRemitente;
+    private String nombreD;
+    private String apellidoD;
+    private String identificacionD;
+    private String telfBeneficiario;
+    private String telfEncargado;
+    private String correoD;
+    private String referenciaD;
+    private String tipoEntrega;
     private String ruta;
+    private String estado;
 
-
-
-
+    @OneToMany(mappedBy = "detalleEncomienda", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Producto> productos = new ArrayList<>();
+    @Column(name = "qr_code_path")
+    private String qrCodePath;
 }
+

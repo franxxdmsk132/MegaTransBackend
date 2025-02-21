@@ -127,6 +127,12 @@
             <artifactId>logback-classic</artifactId>
             <version>1.5.12</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.5.3</version> <!-- Asegúrate de usar la última versión -->
+        </dependency>
+
 
     </dependencies>
 

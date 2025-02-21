@@ -50,6 +50,8 @@ public class MainSecurity {
                         .requestMatchers("/admin/**").hasRole("ADMIN") // Rutas para ADMIN
                         .requestMatchers("/empl/**").hasRole("EMPL") // Rutas para empleados
                         .requestMatchers("/uploads/**").permitAll() // Rutas públicas para subidas
+                        .requestMatchers("/qr_codes/**").permitAll() // Rutas públicas para subidas
+
                         .anyRequest().authenticated() // Todas las demás requieren autenticación
                 )
                 .exceptionHandling(exceptions ->

@@ -30,10 +30,13 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         String uploadsPath = Paths.get("uploads").toAbsolutePath().toUri().toString();
         String usersImgPath = Paths.get("usersimg").toAbsolutePath().toUri().toString();
+        String qr_codes = Paths.get("qr_codes").toAbsolutePath().toUri().toString();
 
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations(uploadsPath);
-        registry.addResourceHandler("/usersimg/**")
-                .addResourceLocations(usersImgPath);
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations(uploadsPath);
+        registry.addResourceHandler("/qr_codes/**")
+                .addResourceLocations(qr_codes);
     }
 }
