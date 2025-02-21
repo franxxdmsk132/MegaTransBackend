@@ -4,6 +4,8 @@ import com.megatrans.megatransappbackend.Encomiendas.DTO.DetalleEncomiendaDTO;
 import com.megatrans.megatransappbackend.Encomiendas.Entity.DetalleEncomienda;
 import com.megatrans.megatransappbackend.Encomiendas.Repository.DetalleEncomiendaRepository;
 import com.megatrans.megatransappbackend.Encomiendas.Service.DetalleEncomiendaService;
+import com.megatrans.megatransappbackend.Security.entity.Usuario;
+import com.megatrans.megatransappbackend.Security.repository.UsuarioRepository;
 import com.megatrans.megatransappbackend.Transporte_Mudanza.Entity.DetalleTransporte;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.FileSystemResource;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -31,11 +34,13 @@ public class DetalleEncomiendaController {
     private DetalleEncomiendaService detalleEncomiendaService;
     @Autowired
     private DetalleEncomiendaRepository detalleEncomiendaRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
-    @GetMapping
-    public List<DetalleEncomiendaDTO> getAllDetalleEncomiendas() {
-        return detalleEncomiendaService.getAllDetalleEncomiendas();
-    }
+//    @GetMapping
+//    public List<DetalleEncomiendaDTO> getAllDetalleEncomiendas() {
+//        return detalleEncomiendaService.getEncomiendasPorUsuario();
+//    }
     @PostMapping("/crear")
     public DetalleEncomiendaDTO crearEncomienda(@RequestBody DetalleEncomiendaDTO detalleEncomiendaDTO) {
         return detalleEncomiendaService.crearEncomienda(detalleEncomiendaDTO);
@@ -73,7 +78,33 @@ public class DetalleEncomiendaController {
             return ResponseEntity.notFound().build();
         }
     }
+    @GetMapping("/filtrados")
+    public ResponseEntity<List<DetalleEncomiendaDTO>> listarDetallesEncomienda(Authentication authentication) {
+        // Obtener el nombre de usuario desde la autenticación
+        String username = authentication.getName();
 
+        // Buscar el usuario autenticado en la base de datos
+        Usuario usuario = usuarioRepository.findByNombreUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Obtener el rol del usuario
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+        boolean isEmpleado = authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_EMPL"));
+
+        List<DetalleEncomiendaDTO> encomiendasDTO;
+
+        if (isAdmin || isEmpleado) {
+            // Si es ADMIN o EMPLEADO, obtener todas las encomiendas
+            encomiendasDTO = detalleEncomiendaService.obtenerTodasEncomiendas();
+        } else {
+            // Si es un usuario común, obtener solo las encomiendas asociadas a ese usuario
+            encomiendasDTO = detalleEncomiendaService.obtenerEncomiendasPorUsuario(usuario);
+        }
+
+        return ResponseEntity.ok(encomiendasDTO);
+    }
 
 
 

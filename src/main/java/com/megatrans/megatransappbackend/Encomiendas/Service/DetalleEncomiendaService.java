@@ -16,7 +16,9 @@ import com.megatrans.megatransappbackend.Security.repository.UsuarioRepository;
 import com.megatrans.megatransappbackend.Transporte_Mudanza.Entity.DetalleTransporte;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -273,6 +275,20 @@ public class DetalleEncomiendaService {
         }
     }
 
+    // Obtener todas las encomiendas (para admin y empleados)
+    public List<DetalleEncomiendaDTO> obtenerTodasEncomiendas() {
+        List<DetalleEncomienda> encomiendas = detalleEncomiendaRepository.findAll();
+        return encomiendas.stream()
+                .map(this::convertirADetalleEncomiendaDTO)
+                .collect(Collectors.toList());
+    }
 
+    // Obtener las encomiendas asociadas al usuario
+    public List<DetalleEncomiendaDTO> obtenerEncomiendasPorUsuario(Usuario usuario) {
+        List<DetalleEncomienda> encomiendas = detalleEncomiendaRepository.findByUsuario(usuario);
+        return encomiendas.stream()
+                .map(this::convertirADetalleEncomiendaDTO)
+                .collect(Collectors.toList());
+    }
 
 }
