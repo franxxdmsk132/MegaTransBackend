@@ -434,5 +434,10 @@ public ResponseEntity<?> cambiarContrasena(
         String mensaje = "Hola SSL";
         return ResponseEntity.ok(mensaje);
     }
+    // Endpoint para obtener el conteo de usuarios
+    @GetMapping("/count")
+    public long getUsuariosCount() {
+        return usuarioService.countUsuarios();
+    }
 
 }

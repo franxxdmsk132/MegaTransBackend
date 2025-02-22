@@ -51,4 +51,8 @@ public class UsuarioService {
     public void deleteById(Integer id){
         usuarioRepository.deleteById(id);
     }
+    // Método para contar el número de usuarios
+    public long countUsuarios() {
+        return usuarioRepository.count();
+    }
 }
