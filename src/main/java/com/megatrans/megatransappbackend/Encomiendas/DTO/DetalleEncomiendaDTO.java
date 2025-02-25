@@ -1,6 +1,7 @@
 package com.megatrans.megatransappbackend.Encomiendas.DTO;
 
 import com.megatrans.megatransappbackend.Encomiendas.Entity.Producto;
+import com.megatrans.megatransappbackend.Lote.Entity.Lote;
 import com.megatrans.megatransappbackend.Security.entity.Usuario;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,4 +33,5 @@ public class DetalleEncomiendaDTO {
     private String ruta;
     private EstadoEncomienda estado;
     private List<ProductoDTO> productosDto;
+    private Lote lote;
 }

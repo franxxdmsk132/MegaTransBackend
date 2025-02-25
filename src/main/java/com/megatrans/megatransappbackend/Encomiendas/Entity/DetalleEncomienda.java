@@ -1,6 +1,8 @@
 package com.megatrans.megatransappbackend.Encomiendas.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.megatrans.megatransappbackend.Lote.Entity.Lote;
 import com.megatrans.megatransappbackend.Security.entity.Usuario;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -45,5 +47,9 @@ public class DetalleEncomienda {
     private List<Producto> productos = new ArrayList<>();
     @Column(name = "qr_code_path")
     private String qrCodePath;
+
+    @ManyToOne
+    @JoinColumn(name = "lote_id")
+    private Lote lote;
 }
 
