@@ -11,6 +11,8 @@ import com.megatrans.megatransappbackend.Encomiendas.Entity.DetalleEncomienda;
 import com.megatrans.megatransappbackend.Encomiendas.Entity.Producto;
 import com.megatrans.megatransappbackend.Encomiendas.Repository.DetalleEncomiendaRepository;
 import com.megatrans.megatransappbackend.Encomiendas.Repository.ProductoRepository;
+import com.megatrans.megatransappbackend.Lote.DTO.LoteDTO;
+import com.megatrans.megatransappbackend.Lote.Entity.Lote;
 import com.megatrans.megatransappbackend.Security.entity.Usuario;
 import com.megatrans.megatransappbackend.Security.repository.UsuarioRepository;
 import com.megatrans.megatransappbackend.Transporte_Mudanza.Entity.DetalleTransporte;
@@ -179,6 +181,11 @@ public class DetalleEncomiendaService {
         dto.setEstado(DetalleEncomiendaDTO.EstadoEncomienda.valueOf(detalleEncomienda.getEstado()));
         dto.setFecha(detalleEncomienda.getFecha());
         dto.setQrCodePath(detalleEncomienda.getQrCodePath());
+        // Verifica que lote no sea null y convierte a LoteDTO
+        if (detalleEncomienda.getLote() != null) {
+            LoteDTO loteDTO = convertirALoteDTO(detalleEncomienda.getLote()); // Convierte Lote a LoteDTO
+            dto.setLote(loteDTO); // Establece el objeto LoteDTO en el DTO de Encomienda
+        }
 
         // Convertir la lista de productos a DTOs
         List<ProductoDTO> productosDTO = detalleEncomienda.getProductos().stream()
@@ -200,6 +207,16 @@ public class DetalleEncomiendaService {
         dto.setPeso(producto.getPeso());
         dto.setFragil(producto.isFragil());
         return dto;
+    }
+    private LoteDTO convertirALoteDTO(Lote lote) {
+        LoteDTO loteDTO = new LoteDTO();
+        loteDTO.setNumLote(lote.getNumLote()); // Asigna el numLote al DTO
+        loteDTO.setId(lote.getId());
+        loteDTO.setFecha(lote.getFecha());
+        loteDTO.setEstado(lote.getEstado());
+        loteDTO.setUnidad(lote.getUnidad());
+        loteDTO.setRuta(lote.getRuta());
+        return loteDTO;
     }
 
 
