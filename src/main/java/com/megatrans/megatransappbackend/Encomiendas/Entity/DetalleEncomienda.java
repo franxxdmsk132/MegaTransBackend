@@ -32,6 +32,8 @@ public class DetalleEncomienda {
     private LocalDate fecha;
 
     private String dirRemitente;
+    private Double latitudOrg;
+    private Double longitudOrg;
     private String nombreD;
     private String apellidoD;
     private String identificacionD;
@@ -39,6 +41,9 @@ public class DetalleEncomienda {
     private String telfEncargado;
     private String correoD;
     private String referenciaD;
+    private String dirDestino;
+    private Double latitudDestino;
+    private Double longitudDestino;
     private String tipoEntrega;
     private String ruta;
     private String estado;

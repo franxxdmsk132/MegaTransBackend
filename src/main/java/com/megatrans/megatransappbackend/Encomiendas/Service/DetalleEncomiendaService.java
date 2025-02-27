@@ -64,12 +64,17 @@ public class DetalleEncomiendaService {
         detalleEncomienda.setNumGuia(generarNuevoNumGuia());
         detalleEncomienda.setFecha(detalleEncomiendaDTO.getFecha());
         detalleEncomienda.setDirRemitente(detalleEncomiendaDTO.getDirRemitente());
+        detalleEncomienda.setLatitudOrg(detalleEncomiendaDTO.getLatitudOrg());
+        detalleEncomienda.setLongitudOrg(detalleEncomiendaDTO.getLongitudOrg());
         detalleEncomienda.setNombreD(detalleEncomiendaDTO.getNombreD());
         detalleEncomienda.setApellidoD(detalleEncomiendaDTO.getApellidoD());
         detalleEncomienda.setIdentificacionD(detalleEncomiendaDTO.getIdentificacionD());
         detalleEncomienda.setTelfBeneficiario(detalleEncomiendaDTO.getTelfBeneficiario());
         detalleEncomienda.setTelfEncargado(detalleEncomiendaDTO.getTelfEncargado());
         detalleEncomienda.setCorreoD(detalleEncomiendaDTO.getCorreoD());
+        detalleEncomienda.setDirDestino(detalleEncomiendaDTO.getDirDestino());
+        detalleEncomienda.setLatitudDestino(detalleEncomiendaDTO.getLatitudDestino());
+        detalleEncomienda.setLongitudDestino(detalleEncomiendaDTO.getLongitudDestino());
         detalleEncomienda.setReferenciaD(detalleEncomiendaDTO.getReferenciaD());
         detalleEncomienda.setTipoEntrega(detalleEncomiendaDTO.getTipoEntrega());
         detalleEncomienda.setRuta(detalleEncomiendaDTO.getRuta());
@@ -169,6 +174,8 @@ public class DetalleEncomiendaService {
         dto.setNumGuia(detalleEncomienda.getNumGuia());
         dto.setUsuario(detalleEncomienda.getUsuario());
         dto.setDirRemitente(detalleEncomienda.getDirRemitente());
+        dto.setLongitudOrg(detalleEncomienda.getLongitudOrg());
+        dto.setLatitudOrg(detalleEncomienda.getLatitudOrg());
         dto.setNombreD(detalleEncomienda.getNombreD());
         dto.setApellidoD(detalleEncomienda.getApellidoD());
         dto.setIdentificacionD(detalleEncomienda.getIdentificacionD());
@@ -176,6 +183,9 @@ public class DetalleEncomiendaService {
         dto.setTelfEncargado(detalleEncomienda.getTelfEncargado());
         dto.setCorreoD(detalleEncomienda.getCorreoD());
         dto.setReferenciaD(detalleEncomienda.getReferenciaD());
+        dto.setDirDestino(detalleEncomienda.getDirDestino());
+        dto.setLatitudDestino(detalleEncomienda.getLatitudDestino());
+        dto.setLongitudDestino(detalleEncomienda.getLongitudDestino());
         dto.setTipoEntrega(detalleEncomienda.getTipoEntrega());
         dto.setRuta(detalleEncomienda.getRuta());
         dto.setEstado(DetalleEncomiendaDTO.EstadoEncomienda.valueOf(detalleEncomienda.getEstado()));
