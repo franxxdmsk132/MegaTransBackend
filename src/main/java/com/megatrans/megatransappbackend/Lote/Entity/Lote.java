@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ public class Lote {
 
     private String numLote;
 
+    @CreationTimestamp
+    @Column(updatable = false)
     private LocalDate fecha;
 
     private String estado;

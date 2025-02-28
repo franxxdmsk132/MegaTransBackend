@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,9 +38,9 @@ public class LoteService {
 
         // Crear la instancia del lote
         Lote lote = new Lote();
-        lote.setNumLote(loteDTO.getNumLote());
+        lote.setNumLote(generarNuevoNumLote());
         lote.setFecha(loteDTO.getFecha());
-        lote.setEstado(loteDTO.getEstado());
+        lote.setEstado("Pendiente");
         lote.setUnidad(unidad);
         lote.setRuta(loteDTO.getRuta());
 
@@ -106,8 +107,6 @@ public class LoteService {
         }
 
         // Actualizar los datos del lote
-        lote.setNumLote(loteDTO.getNumLote());
-        lote.setFecha(loteDTO.getFecha());
         lote.setEstado(loteDTO.getEstado());
         lote.setRuta(loteDTO.getRuta());
 
@@ -168,7 +167,22 @@ public class LoteService {
         // Guardar y retornar el lote actualizado
         return loteRepository.save(lote);
     }
+    public String generarNuevoNumLote() {
+        Optional<String> lastNumLote = loteRepository.findLastNumLote();
 
+        if (lastNumLote.isPresent()) {
+            // Extraer el número actual y aumentar en 1
+            String lastLote = lastNumLote.get();
+            int lastNumber = Integer.parseInt(lastLote.substring(2)); // Extrae el número ignorando 'TM'
+            int nextNumber = lastNumber + 1;
+
+            // Formatear con ceros a la izquierda (mínimo 5 dígitos)
+            return String.format("LT%05d", nextNumber);
+        } else {
+            // Si no hay registros, comenzar con TM00001
+            return "LT00001";
+        }
+    }
 
 
 

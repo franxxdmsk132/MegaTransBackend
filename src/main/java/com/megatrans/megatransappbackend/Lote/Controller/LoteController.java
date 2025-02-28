@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/lote")
@@ -40,14 +42,26 @@ public class LoteController {
 
     // 📌 Endpoint para actualizar solo el estado de un lote
     @PutMapping("/{id}/estado")
-    public ResponseEntity<Lote> actualizarEstadoLote(@PathVariable Integer id, @RequestParam String nuevoEstado) {
-        Lote loteActualizado = loteService.actualizarEstadoLote(id, nuevoEstado);
-        return ResponseEntity.ok(loteActualizado);
+    public ResponseEntity<Map<String, String>> actualizarEstadoLote(@PathVariable Integer id, @RequestParam String nuevoEstado) {
+        loteService.actualizarEstadoLote(id, nuevoEstado);
+
+        // Crear una respuesta personalizada con solo un mensaje
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "El estado del lote ha sido actualizado correctamente.");
+
+        return ResponseEntity.ok(response);
     }
+
     // ✅ Actualizar todo el lote por ID
     @PutMapping("/actualizar/{id}")
-    public ResponseEntity<Lote> actualizarLote(@PathVariable Integer id, @RequestBody LoteDTO loteDTO) {
-        Lote loteActualizado = loteService.actualizarLote(id, loteDTO);
-        return ResponseEntity.ok(loteActualizado);
+    public ResponseEntity<Map<String, String>> actualizarLote(@PathVariable Integer id, @RequestBody LoteDTO loteDTO) {
+        loteService.actualizarLote(id, loteDTO);
+
+        // Crear una respuesta personalizada con solo un mensaje
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "El lote ha sido actualizado correctamente.");
+
+        return ResponseEntity.ok(response);
     }
+
 }
