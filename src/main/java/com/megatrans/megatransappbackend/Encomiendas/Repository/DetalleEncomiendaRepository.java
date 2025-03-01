@@ -19,5 +19,5 @@ public interface DetalleEncomiendaRepository extends JpaRepository<DetalleEncomi
     Optional<DetalleEncomienda> findByNumGuia(String numGuia);
 
     List<DetalleEncomienda> findByUsuario(Usuario usuario);
-
+    List<DetalleEncomienda>findByEstado(String estado);
 }

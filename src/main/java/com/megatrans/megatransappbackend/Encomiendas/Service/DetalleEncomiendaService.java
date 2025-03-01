@@ -123,6 +123,13 @@ public class DetalleEncomiendaService {
         return convertirADetalleEncomiendaDTO(detalleEncomienda);
     }
 
+    public List<DetalleEncomiendaDTO> obtenerEncomiendasPendientes() {
+        List<DetalleEncomienda> encomiendasPendientes = detalleEncomiendaRepository.findByEstado("RECOLECCION");
+
+        return encomiendasPendientes.stream()
+                .map(this::convertirADetalleEncomiendaDTO)
+                .collect(Collectors.toList());
+    }
 
     // Obtener todos los detalles de encomienda con sus productos
     public List<DetalleEncomiendaDTO> getAllDetalleEncomiendas() {
