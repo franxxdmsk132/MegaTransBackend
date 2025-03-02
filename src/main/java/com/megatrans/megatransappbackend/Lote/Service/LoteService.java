@@ -40,7 +40,7 @@ public class LoteService {
         Lote lote = new Lote();
         lote.setNumLote(generarNuevoNumLote());
         lote.setFecha(loteDTO.getFecha());
-        lote.setEstado("Pendiente");
+        lote.setEstado("PENDIENTE");
         lote.setUnidad(unidad);
         lote.setRuta(loteDTO.getRuta());
 
