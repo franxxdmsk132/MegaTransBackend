@@ -167,6 +167,77 @@ public class LoteService {
         // Guardar y retornar el lote actualizado
         return loteRepository.save(lote);
     }
+    @Transactional
+    public Lote actualizarEstadoLote2(Integer id, String nuevoEstado) {
+        // Buscar el lote por su ID
+        Lote lote = loteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lote no encontrado"));
+
+        // Verificar estado del lote
+        System.out.println("Estado actual del lote: " + lote.getEstado());
+
+        // Obtener las encomiendas asociadas al lote
+        List<DetalleEncomienda> encomiendas = detalleEncomiendaRepository.findByLote(lote);
+
+        // Verificar que se obtuvieron encomiendas
+        if (encomiendas.isEmpty()) {
+            throw new RuntimeException("No hay encomiendas asociadas al lote");
+        }
+
+        // Verificar los estados de las encomiendas antes de actualizar
+        for (DetalleEncomienda encomienda : encomiendas) {
+            System.out.println("Estado de encomienda " + encomienda.getNumGuia() + ": " + encomienda.getEstado());
+        }
+
+        // Si el estado cambia de "PENDIENTE" a "TRASLADANDO", actualizar las encomiendas
+        if ("PENDIENTE".equals(lote.getEstado()) && "TRASLADANDO".equals(nuevoEstado)) {
+            System.out.println("Entrando en el primer if");
+            for (DetalleEncomienda encomienda : encomiendas) {
+                if ("RECOLECTADO".equals(encomienda.getEstado())) {
+                    encomienda.setEstado("TRASLADO");
+                    System.out.println("Actualizando estado de encomienda " + encomienda.getNumGuia() + " a TRASLADO");
+                }
+            }
+            // Guardar los cambios en las encomiendas
+            System.out.println("Guardando cambios en las encomiendas...");
+            encomiendaRepository.saveAll(encomiendas);
+            encomiendaRepository.flush(); // Asegura que los cambios se persistan
+
+            // Verificar los estados de las encomiendas después de la actualización
+            for (DetalleEncomienda encomienda : encomiendas) {
+                System.out.println("Estado actualizado de encomienda " + encomienda.getNumGuia() + ": " + encomienda.getEstado());
+            }
+        }
+
+        // Si el estado cambia de "TRASLANDANDO" a "BODEGA", actualizar las encomiendas
+        if ("TRASLADANDO".equals(lote.getEstado()) && "BODEGA".equals(nuevoEstado)) {
+            System.out.println("Entrando en el segundo if");
+            for (DetalleEncomienda encomienda : encomiendas) {
+                if ("TRASLADO".equals(encomienda.getEstado())) {
+                    encomienda.setEstado("BODEGA");
+                    System.out.println("Actualizando estado de encomienda " + encomienda.getNumGuia() + " a BODEGA");
+                }
+            }
+            // Guardar los cambios en las encomiendas
+            System.out.println("Guardando cambios en las encomiendas...");
+            encomiendaRepository.saveAll(encomiendas);
+            encomiendaRepository.flush(); // Asegura que los cambios se persistan
+
+            // Verificar los estados de las encomiendas después de la actualización
+            for (DetalleEncomienda encomienda : encomiendas) {
+                System.out.println("Estado actualizado de encomienda " + encomienda.getNumGuia() + ": " + encomienda.getEstado());
+            }
+        }
+
+        // Actualizar el estado del lote
+        lote.setEstado(nuevoEstado);
+
+        // Guardar y retornar el lote actualizado
+        return loteRepository.save(lote);
+    }
+
+
+
     public String generarNuevoNumLote() {
         Optional<String> lastNumLote = loteRepository.findLastNumLote();
 

@@ -51,6 +51,16 @@ public class LoteController {
 
         return ResponseEntity.ok(response);
     }
+    @PutMapping("/{id}/estado2")
+    public ResponseEntity<Map<String, String>> actualizarEstadoLote2(@PathVariable Integer id, @RequestParam String nuevoEstado) {
+        loteService.actualizarEstadoLote2(id, nuevoEstado);
+
+        // Crear una respuesta personalizada con solo un mensaje
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "El estado del lote ha sido actualizado correctamente.");
+
+        return ResponseEntity.ok(response);
+    }
 
     // ✅ Actualizar todo el lote por ID
     @PutMapping("/actualizar/{id}")

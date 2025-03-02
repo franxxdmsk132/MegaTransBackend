@@ -1,6 +1,7 @@
 package com.megatrans.megatransappbackend.Encomiendas.Repository;
 
 import com.megatrans.megatransappbackend.Encomiendas.Entity.DetalleEncomienda;
+import com.megatrans.megatransappbackend.Lote.Entity.Lote;
 import com.megatrans.megatransappbackend.Security.entity.Usuario;
 import com.megatrans.megatransappbackend.Transporte_Mudanza.Entity.DetalleTransporte;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,4 +21,5 @@ public interface DetalleEncomiendaRepository extends JpaRepository<DetalleEncomi
 
     List<DetalleEncomienda> findByUsuario(Usuario usuario);
     List<DetalleEncomienda>findByEstado(String estado);
+    List<DetalleEncomienda>findByLote(Lote lote);
 }

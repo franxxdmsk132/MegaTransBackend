@@ -14,7 +14,7 @@ import java.util.List;
 public class DetalleEncomiendaDTO {
 
     public enum EstadoEncomienda {
-        RECOLECCION ,TRASLADO, ENTREGADO
+        RECOLECCION,RECOLECTADO,TRASLADO,BODEGA,ENTREGADO,CANCELADO
     }
 
     private Integer id;
