@@ -33,7 +33,7 @@ public class LoteService {
     @Transactional
     public Lote crearLote(LoteDTO loteDTO) {
         // Buscar la unidad por ID
-        Unidad unidad = unidadRepository.findById(loteDTO.getIdUnidad())
+        Unidad unidad = unidadRepository.findById(loteDTO.getUnidad())
                 .orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
 
         // Crear la instancia del lote
@@ -86,7 +86,7 @@ public class LoteService {
                     .collect(Collectors.toList());
             loteDTO.setNumerosGuia(numerosGuia); // Asignar la lista de números de guía
 
-            loteDTO.setIdUnidad(lote.getUnidad().getId()); // Asignar la unidad asociada al lote
+            loteDTO.setUnidad(lote.getUnidad().getId()); // Asignar la unidad asociada al lote
 
             return loteDTO; // Retornar el DTO
         }).collect(Collectors.toList());
@@ -100,8 +100,8 @@ public class LoteService {
                 .orElseThrow(() -> new RuntimeException("Lote no encontrado"));
 
         // Buscar la unidad si se proporciona un nuevo ID de unidad
-        if (loteDTO.getIdUnidad() != null && !lote.getUnidad().getId().equals(loteDTO.getIdUnidad())) {
-            Unidad unidad = unidadRepository.findById(loteDTO.getIdUnidad())
+        if (loteDTO.getUnidad() != null && !lote.getUnidad().getId().equals(loteDTO.getUnidad())) {
+            Unidad unidad = unidadRepository.findById(loteDTO.getUnidad())
                     .orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
             lote.setUnidad(unidad);
         }
@@ -151,7 +151,7 @@ public class LoteService {
                 .collect(Collectors.toList());
         loteDTO.setNumerosGuia(numerosGuia);
 
-        loteDTO.setIdUnidad(lote.getUnidad().getId()); // Asignar la unidad asociada al lote
+        loteDTO.setUnidad(lote.getUnidad().getId()); // Asignar la unidad asociada al lote
 
         return loteDTO; // Retornar el DTO con la información del lote
     }
