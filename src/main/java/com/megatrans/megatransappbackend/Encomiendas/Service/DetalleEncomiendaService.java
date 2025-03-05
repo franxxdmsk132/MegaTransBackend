@@ -238,7 +238,7 @@ public class DetalleEncomiendaService {
         loteDTO.setId(lote.getId());
         loteDTO.setFecha(lote.getFecha());
         loteDTO.setEstado(lote.getEstado());
-        loteDTO.setUnidad(lote.getUnidad());
+        loteDTO.setIdUnidad(lote.getUnidad().getId());
         loteDTO.setRuta(lote.getRuta());
         return loteDTO;
     }
