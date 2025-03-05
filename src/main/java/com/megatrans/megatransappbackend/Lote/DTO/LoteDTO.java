@@ -19,7 +19,7 @@ public class LoteDTO {
     private String numLote;
     private LocalDate fecha;
     private String estado;
-    private Integer unidad; // ID de la unidad
+    private UnidadDTO unidad; // ID de la unidad
     private List<Integer> encomiendaIds; // ✅ Cambiado a lista de IDs
     private List<String> numerosGuia; // Lista de números de guía de las encomiendas
     private String ruta;

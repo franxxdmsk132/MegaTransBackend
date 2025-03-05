@@ -6,6 +6,7 @@ import com.megatrans.megatransappbackend.Encomiendas.Repository.DetalleEncomiend
 import com.megatrans.megatransappbackend.Lote.DTO.LoteDTO;
 import com.megatrans.megatransappbackend.Lote.Entity.Lote;
 import com.megatrans.megatransappbackend.Lote.Repository.LoteRepository;
+import com.megatrans.megatransappbackend.Unidad.DTO.UnidadDTO;
 import com.megatrans.megatransappbackend.Unidad.Entity.Unidad;
 import com.megatrans.megatransappbackend.Unidad.Repository.UnidadRepository;
 import jakarta.transaction.Transactional;
@@ -33,7 +34,7 @@ public class LoteService {
     @Transactional
     public Lote crearLote(LoteDTO loteDTO) {
         // Buscar la unidad por ID
-        Unidad unidad = unidadRepository.findById(loteDTO.getUnidad())
+        Unidad unidad = unidadRepository.findById(loteDTO.getUnidad().getId())
                 .orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
 
         // Crear la instancia del lote
@@ -86,7 +87,7 @@ public class LoteService {
                     .collect(Collectors.toList());
             loteDTO.setNumerosGuia(numerosGuia); // Asignar la lista de números de guía
 
-            loteDTO.setUnidad(lote.getUnidad().getId()); // Asignar la unidad asociada al lote
+            loteDTO.setUnidad(convertirAUnidadDTO(lote.getUnidad())); // Asignar la unidad convertida a DTO
 
             return loteDTO; // Retornar el DTO
         }).collect(Collectors.toList());
@@ -101,7 +102,7 @@ public class LoteService {
 
         // Buscar la unidad si se proporciona un nuevo ID de unidad
         if (loteDTO.getUnidad() != null && !lote.getUnidad().getId().equals(loteDTO.getUnidad())) {
-            Unidad unidad = unidadRepository.findById(loteDTO.getUnidad())
+            Unidad unidad = unidadRepository.findById(loteDTO.getUnidad().getId())
                     .orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
             lote.setUnidad(unidad);
         }
@@ -151,7 +152,7 @@ public class LoteService {
                 .collect(Collectors.toList());
         loteDTO.setNumerosGuia(numerosGuia);
 
-        loteDTO.setUnidad(lote.getUnidad().getId()); // Asignar la unidad asociada al lote
+        loteDTO.setUnidad(convertirAUnidadDTO(lote.getUnidad())); // Asignar la unidad convertida a DTO
 
         return loteDTO; // Retornar el DTO con la información del lote
     }
@@ -254,6 +255,20 @@ public class LoteService {
             return "LT00001";
         }
     }
+    public UnidadDTO convertirAUnidadDTO(Unidad unidad) {
+        UnidadDTO unidadDTO = new UnidadDTO();
+        unidadDTO.setId(unidad.getId());
+        unidadDTO.setAltura(unidad.getAltura());
+        unidadDTO.setAncho(unidad.getAncho());
+        unidadDTO.setLargo(unidad.getLargo());
+        unidadDTO.setTipo(unidad.getTipo());
+        unidadDTO.setTipo_cajon(unidad.getTipo_cajon());
+        unidadDTO.setImagenUrl(unidad.getImagenUrl());
+
+        // Asigna otros campos de la unidad a la unidadDTO según sea necesario
+        return unidadDTO;
+    }
+
 
 
 

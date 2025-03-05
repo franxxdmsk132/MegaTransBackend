@@ -1,15 +1,18 @@
 package com.megatrans.megatransappbackend.Unidad.DTO;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
 @Data
+@AllArgsConstructor
 public class UnidadDTO {
-
-    private MultipartFile imagenUrl;
+    private Integer id;
+    private String imagenUrl;
     @Min(0)
     private Double altura;
     @Min(0)
@@ -24,7 +27,7 @@ public class UnidadDTO {
     public UnidadDTO() {
     }
 
-    public UnidadDTO(MultipartFile imagenUrl, Double altura, Double largo, Double ancho, String tipo, String tipo_cajon) {
+    public UnidadDTO(String imagenUrl, Double altura, Double largo, Double ancho, String tipo, String tipo_cajon) {
         this.imagenUrl = imagenUrl;
         this.altura = altura;
         this.largo = largo;

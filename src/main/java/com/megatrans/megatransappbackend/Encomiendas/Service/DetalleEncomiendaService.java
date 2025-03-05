@@ -16,6 +16,8 @@ import com.megatrans.megatransappbackend.Lote.Entity.Lote;
 import com.megatrans.megatransappbackend.Security.entity.Usuario;
 import com.megatrans.megatransappbackend.Security.repository.UsuarioRepository;
 import com.megatrans.megatransappbackend.Transporte_Mudanza.Entity.DetalleTransporte;
+import com.megatrans.megatransappbackend.Unidad.DTO.UnidadDTO;
+import com.megatrans.megatransappbackend.Unidad.Entity.Unidad;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -238,7 +240,7 @@ public class DetalleEncomiendaService {
         loteDTO.setId(lote.getId());
         loteDTO.setFecha(lote.getFecha());
         loteDTO.setEstado(lote.getEstado());
-        loteDTO.setUnidad(lote.getUnidad().getId());
+        loteDTO.setUnidad(convertirAUnidadDTO(lote.getUnidad()));
         loteDTO.setRuta(lote.getRuta());
         return loteDTO;
     }
@@ -331,5 +333,15 @@ public class DetalleEncomiendaService {
                 .map(this::convertirADetalleEncomiendaDTO)
                 .collect(Collectors.toList());
     }
-
+    public UnidadDTO convertirAUnidadDTO(Unidad unidad) {
+        UnidadDTO unidadDTO = new UnidadDTO();
+        unidadDTO.setId(unidad.getId());
+        unidadDTO.setAltura(unidad.getAltura());
+        unidadDTO.setAncho(unidad.getAncho());
+        unidadDTO.setLargo(unidad.getLargo());
+        unidadDTO.setTipo(unidad.getTipo());
+        unidadDTO.setTipo_cajon(unidad.getTipo_cajon());
+        unidadDTO.setImagenUrl(unidad.getImagenUrl());
+        return unidadDTO;
+    }
 }
