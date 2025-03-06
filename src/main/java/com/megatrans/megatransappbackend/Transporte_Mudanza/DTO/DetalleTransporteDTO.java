@@ -12,7 +12,7 @@ public class DetalleTransporteDTO {
 
 
     public enum EstadoTransporte {
-        PENDIENTE, PROCESANDO, MOVIMIENTO, FINALIZADO
+        PENDIENTE, PROCESANDO, MOVIMIENTO, FINALIZADO, CANCELADO
     }
 
     public enum Pago {
