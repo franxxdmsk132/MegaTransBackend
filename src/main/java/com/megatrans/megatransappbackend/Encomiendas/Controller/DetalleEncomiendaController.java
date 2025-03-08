@@ -114,5 +114,9 @@ public class DetalleEncomiendaController {
     public List<DetalleEncomiendaDTO> listarEncomiendasRecolectadas() {
         return detalleEncomiendaService.obtenerEncomiendasRecolectadas();
     }
+    @GetMapping("/recolectadonlt")
+    public List<DetalleEncomiendaDTO> listarEncomiendasRecolectadasSinLote() {
+        return detalleEncomiendaService.obtenerEncomiendasRecolectadasSinLote();
+    }
 
 }

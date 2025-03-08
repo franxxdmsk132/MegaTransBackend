@@ -43,6 +43,7 @@ public class LoteService {
         lote.setFecha(loteDTO.getFecha());
         lote.setEstado("PENDIENTE");
         lote.setUnidad(unidad);
+        lote.setEncargado(loteDTO.getEncargado());
         lote.setRuta(loteDTO.getRuta());
 
         // Guardar el lote en la base de datos antes de asignar encomiendas
@@ -74,6 +75,7 @@ public class LoteService {
             loteDTO.setFecha(lote.getFecha());
             loteDTO.setEstado(lote.getEstado());
             loteDTO.setRuta(lote.getRuta());
+            loteDTO.setEncargado(lote.getEncargado());
 
             // Obtener solo los IDs de las encomiendas asociadas al lote
             List<Integer> encomiendaIds = lote.getDetalleEncomiendas().stream()
@@ -110,6 +112,7 @@ public class LoteService {
         // Actualizar los datos del lote
         lote.setEstado(loteDTO.getEstado());
         lote.setRuta(loteDTO.getRuta());
+        lote.setEncargado(loteDTO.getEncargado());
 
         // Buscar las encomiendas existentes por sus IDs y asignarlas al lote
         List<DetalleEncomienda> encomiendas = detalleEncomiendaRepository.findAllById(loteDTO.getEncomiendaIds());
@@ -139,6 +142,7 @@ public class LoteService {
         loteDTO.setFecha(lote.getFecha());
         loteDTO.setEstado(lote.getEstado());
         loteDTO.setRuta(lote.getRuta());
+        loteDTO.setEncargado(lote.getEncargado());
 
         // Obtener solo los IDs de las encomiendas asociadas al lote
         List<Integer> encomiendaIds = lote.getDetalleEncomiendas().stream()

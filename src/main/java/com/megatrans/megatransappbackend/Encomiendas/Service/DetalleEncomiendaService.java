@@ -139,6 +139,14 @@ public class DetalleEncomiendaService {
                 .map(this::convertirADetalleEncomiendaDTO)
                 .collect(Collectors.toList());
     }
+    public List<DetalleEncomiendaDTO> obtenerEncomiendasRecolectadasSinLote() {
+        List<DetalleEncomienda> encomiendasPendientes = detalleEncomiendaRepository.findByEstadoAndLoteIsNull("RECOLECTADO");
+
+        return encomiendasPendientes.stream()
+                .map(this::convertirADetalleEncomiendaDTO)
+                .collect(Collectors.toList());
+    }
+
 
     // Obtener todos los detalles de encomienda con sus productos
     public List<DetalleEncomiendaDTO> getAllDetalleEncomiendas() {
@@ -240,6 +248,7 @@ public class DetalleEncomiendaService {
         loteDTO.setId(lote.getId());
         loteDTO.setFecha(lote.getFecha());
         loteDTO.setEstado(lote.getEstado());
+        loteDTO.setEncargado(lote.getEncargado());
         loteDTO.setUnidad(convertirAUnidadDTO(lote.getUnidad()));
         loteDTO.setRuta(lote.getRuta());
         return loteDTO;

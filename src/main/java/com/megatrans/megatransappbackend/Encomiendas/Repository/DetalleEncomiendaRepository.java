@@ -16,7 +16,7 @@ public interface DetalleEncomiendaRepository extends JpaRepository<DetalleEncomi
 
     @Query("SELECT d.numGuia FROM DetalleEncomienda d ORDER BY d.numGuia DESC LIMIT 1")
     Optional<String> findLastNumGuia();
-
+    List<DetalleEncomienda> findByEstadoAndLoteIsNull(String estado);
     Optional<DetalleEncomienda> findByNumGuia(String numGuia);
 
     List<DetalleEncomienda> findByUsuario(Usuario usuario);

@@ -31,7 +31,7 @@ public class Lote {
     private LocalDate fecha;
 
     private String estado;
-
+    private String encargado;
     @ManyToOne
     @JoinColumn(name = "id_unidad")
     private Unidad unidad;
