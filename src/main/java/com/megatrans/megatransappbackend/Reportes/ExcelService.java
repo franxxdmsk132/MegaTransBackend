@@ -18,8 +18,8 @@ public class ExcelService {
 
         // Encabezados
         Row headerRow = sheet.createRow(0);
-        String[] columns = {"ID", "Num. Orden", "Unidad", "Estado", "Fecha", "Estibaje",
-                "Cant. Estibaje", "Origen", "Destino", "Descripción",
+        String[] columns = {"ID", "Num. Orden", "Unidad", "Estado", "Fecha Creacion", "Estibaje",
+                "Cant. Estibaje", "Origen", "Destino", "Fecha Solicitada ",
                 "Pago", "Tipo Servicio", "Usuario"};
 
         CellStyle headerStyle = workbook.createCellStyle();
