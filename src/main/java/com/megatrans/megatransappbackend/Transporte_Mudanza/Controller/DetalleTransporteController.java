@@ -1,5 +1,6 @@
 package com.megatrans.megatransappbackend.Transporte_Mudanza.Controller;
 
+import com.megatrans.megatransappbackend.Reportes.ExcelService;
 import com.megatrans.megatransappbackend.Security.entity.Usuario;
 import com.megatrans.megatransappbackend.Security.repository.UsuarioRepository;
 import com.megatrans.megatransappbackend.Transporte_Mudanza.DTO.DetalleTransporteDTO;
@@ -11,12 +12,15 @@ import com.megatrans.megatransappbackend.Transporte_Mudanza.Service.DetalleTrans
 import com.megatrans.megatransappbackend.Unidad.Entity.Unidad;
 import com.megatrans.megatransappbackend.Unidad.Repository.UnidadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +43,9 @@ public class DetalleTransporteController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+    @Autowired
+    private ExcelService excelService;
+
 
     private final DetalleTransporteService detalleTransporteService;
 
@@ -205,4 +212,20 @@ public class DetalleTransporteController {
 
         return ResponseEntity.ok(detalles);
     }
+
+    @GetMapping("/excel")
+    public ResponseEntity<byte[]> exportarExcel() {
+        try {
+            List<DetalleTransporte> detalles = detalleTransporteRepository.findAll();
+            byte[] excelBytes = excelService.generarExcel(detalles);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename= Reporte-Transporte.xlsx")
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(excelBytes);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+
+    }
+
 }
