@@ -1,7 +1,5 @@
 package com.megatrans.megatransappbackend.Security.jwt;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,22 +19,8 @@ public class JwtEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException {
-
-        String errorMessage = "No autorizado";
-
-        // Verificar si el error es una excepción de JWT (token malformado o expirado)
-        if (authException.getCause() instanceof ExpiredJwtException) {
-            errorMessage = "Token expirado. Por favor, inicie sesión nuevamente.";
-        } else if (authException.getCause() instanceof MalformedJwtException) {
-            errorMessage = "Token malformado. Verifique el formato del token.";
-        } else {
-            errorMessage = "Autenticación fallida: " + authException.getMessage();
-        }
-
-        // Agregar un log con el error de autenticación
-        logger.error("Autenticación fallida: " + errorMessage);
-
-        // Enviar respuesta 401 con el mensaje de error específico
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, errorMessage);
+        // Agregar más detalles al log de la excepción
+        logger.error("Autenticación fallida: " + authException.getMessage());
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No autorizado");
     }
 }
