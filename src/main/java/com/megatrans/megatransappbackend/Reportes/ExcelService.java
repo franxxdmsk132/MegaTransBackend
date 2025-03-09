@@ -12,15 +12,15 @@ import java.util.List;
 @Service
 public class ExcelService {
 
-    public byte[] generarExcel(List<DetalleTransporte> detalles) throws IOException {
+    public byte[] generarExcelTransporte(List<DetalleTransporte> detalles) throws IOException {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Reporte Transporte");
 
         // Encabezados
         Row headerRow = sheet.createRow(0);
-        String[] columns = {"ID", "Num. Orden", "Unidad", "Estado", "Fecha Creacion", "Estibaje",
+        String[] columns = {"ID","Usuario","Num. Orden", "Unidad", "Estado", "Fecha Creacion", "Estibaje",
                 "Cant. Estibaje", "Origen", "Destino", "Fecha Solicitada ",
-                "Pago", "Tipo Servicio", "Usuario"};
+                "Pago", "Tipo Servicio" };
 
         CellStyle headerStyle = workbook.createCellStyle();
         Font font = workbook.createFont();
@@ -39,34 +39,34 @@ public class ExcelService {
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(detalle.getId());
             row.createCell(1).setCellValue(detalle.getNumOrden());
-            row.createCell(2).setCellValue(detalle.getUnidad().getTipo()); // Ajusta según tu clase Unidad
-            row.createCell(3).setCellValue(detalle.getEstado());
-            row.createCell(4).setCellValue(detalle.getFecha().toString());
-            row.createCell(5).setCellValue(detalle.getEstibaje() ? "Sí" : "No");
+            row.createCell(3).setCellValue(detalle.getUsuario().getNombre() + " " + detalle.getUsuario().getApellido()+" / "+ detalle.getUsuario().getNombreComercial()); // Ajusta según Usuario
+            row.createCell(4).setCellValue(detalle.getUnidad().getTipo()); // Ajusta según tu clase Unidad
+            row.createCell(5).setCellValue(detalle.getEstado());
+            row.createCell(6).setCellValue(detalle.getFecha().toString());
+            row.createCell(7).setCellValue(detalle.getEstibaje() ? "Sí" : "No");
             if (detalle.getCantidadEstibaje() !=null){
-                row.createCell(6).setCellValue(detalle.getCantidadEstibaje());
+                row.createCell(8).setCellValue(detalle.getCantidadEstibaje());
             }else {
-                row.createCell(6).setCellValue("N/A");
+                row.createCell(8).setCellValue("N/A");
             }
             if (detalle.getDirOrigen() != null) {
                 String direccionOrg = detalle.getDirOrigen().getCallePrincipal() + " - " +  detalle.getDirOrigen().getCalleSecundaria()  + " - " +  detalle.getDirOrigen().getCiudad();
-                row.createCell(7).setCellValue(direccionOrg);
+                row.createCell(9).setCellValue(direccionOrg);
             } else {
-                row.createCell(7).setCellValue("No disponible");
+                row.createCell(9).setCellValue("No disponible");
             }
 
 
             // Verificar si dirDestino es null antes de acceder a sus atributos
             if (detalle.getDirDestino() != null) {
                 String direccionDes = detalle.getDirDestino().getCallePrincipal() + " - " + detalle.getDirDestino().getCalleSecundaria()+ " - " + detalle.getDirDestino().getCiudad();
-                row.createCell(8).setCellValue(direccionDes);
+                row.createCell(10).setCellValue(direccionDes);
             } else {
-                row.createCell(8).setCellValue("No disponible"); // Mensaje por defecto
+                row.createCell(10).setCellValue("No disponible"); // Mensaje por defecto
             }
-            row.createCell(9).setCellValue(detalle.getDescripcionProducto());
-            row.createCell(10).setCellValue(detalle.getPago());
-            row.createCell(11).setCellValue(detalle.getTipoServicio());
-            row.createCell(12).setCellValue(detalle.getUsuario().getNombre()); // Ajusta según Usuario
+            row.createCell(11).setCellValue(detalle.getDescripcionProducto());
+            row.createCell(12).setCellValue(detalle.getPago());
+            row.createCell(13).setCellValue(detalle.getTipoServicio());
         }
 
         // Ajustar tamaño de columnas
@@ -80,4 +80,7 @@ public class ExcelService {
 
         return out.toByteArray();
     }
+
+
+
 }

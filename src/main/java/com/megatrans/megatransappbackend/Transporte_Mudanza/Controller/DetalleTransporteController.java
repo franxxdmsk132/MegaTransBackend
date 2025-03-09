@@ -21,6 +21,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -217,15 +219,18 @@ public class DetalleTransporteController {
     public ResponseEntity<byte[]> exportarExcel() {
         try {
             List<DetalleTransporte> detalles = detalleTransporteRepository.findAll();
-            byte[] excelBytes = excelService.generarExcel(detalles);
+            byte[] excelBytes = excelService.generarExcelTransporte(detalles);
+
+            // Obtener la fecha actual en formato yyyy-MM-dd
+            String fechaActual = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename= Reporte-Transporte.xlsx")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Reporte_Transporte_" + fechaActual + ".xlsx")
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(excelBytes);
         } catch (IOException e) {
             return ResponseEntity.internalServerError().build();
         }
-
     }
 
 }

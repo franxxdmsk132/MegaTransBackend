@@ -4,6 +4,8 @@ import com.megatrans.megatransappbackend.Encomiendas.DTO.DetalleEncomiendaDTO;
 import com.megatrans.megatransappbackend.Encomiendas.Entity.DetalleEncomienda;
 import com.megatrans.megatransappbackend.Encomiendas.Repository.DetalleEncomiendaRepository;
 import com.megatrans.megatransappbackend.Encomiendas.Service.DetalleEncomiendaService;
+import com.megatrans.megatransappbackend.Reportes.ExcelService;
+import com.megatrans.megatransappbackend.Reportes.ExcelServiceEnc;
 import com.megatrans.megatransappbackend.Security.entity.Usuario;
 import com.megatrans.megatransappbackend.Security.repository.UsuarioRepository;
 import com.megatrans.megatransappbackend.Transporte_Mudanza.Entity.DetalleTransporte;
@@ -11,6 +13,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +41,8 @@ public class DetalleEncomiendaController {
     private DetalleEncomiendaRepository detalleEncomiendaRepository;
     @Autowired
     private UsuarioRepository usuarioRepository;
+    @Autowired
+    private ExcelServiceEnc excelServiceEnc;
 
 //    @GetMapping
 //    public List<DetalleEncomiendaDTO> getAllDetalleEncomiendas() {
@@ -118,5 +125,21 @@ public class DetalleEncomiendaController {
     public List<DetalleEncomiendaDTO> listarEncomiendasRecolectadasSinLote() {
         return detalleEncomiendaService.obtenerEncomiendasRecolectadasSinLote();
     }
+    @GetMapping("/excel")
+    public ResponseEntity<byte[]> descargarReporteExcel() {
+        try {
+            List<DetalleEncomienda> encomiendas = detalleEncomiendaRepository.findAll();
+            byte[] excelBytes = excelServiceEnc.generarReporteExcel(encomiendas);
 
+            // Obtener la fecha actual en formato yyyy-MM-dd
+            String fechaActual = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=Reporte_Encomiendas_" + fechaActual + ".xlsx");
+
+            return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
