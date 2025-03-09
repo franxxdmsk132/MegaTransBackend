@@ -48,16 +48,18 @@ public class ExcelService {
             }else {
                 row.createCell(6).setCellValue("N/A");
             }
-            // Verificar si dirOrigen es null antes de acceder a sus atributos
             if (detalle.getDirOrigen() != null) {
-                row.createCell(7).setCellValue(detalle.getDirOrigen().getCallePrincipal());
+                String direccionOrg = detalle.getDirOrigen().getCallePrincipal() + " - " +  detalle.getDirOrigen().getCalleSecundaria()  + " - " +  detalle.getDirOrigen().getCiudad();
+                row.createCell(7).setCellValue(direccionOrg);
             } else {
-                row.createCell(7).setCellValue("No disponible"); // Mensaje por defecto
+                row.createCell(7).setCellValue("No disponible");
             }
+
 
             // Verificar si dirDestino es null antes de acceder a sus atributos
             if (detalle.getDirDestino() != null) {
-                row.createCell(8).setCellValue(detalle.getDirDestino().getCalleSecundaria());
+                String direccionDes = detalle.getDirDestino().getCallePrincipal() + " - " + detalle.getDirDestino().getCalleSecundaria()+ " - " + detalle.getDirDestino().getCiudad();
+                row.createCell(8).setCellValue(direccionDes);
             } else {
                 row.createCell(8).setCellValue("No disponible"); // Mensaje por defecto
             }
