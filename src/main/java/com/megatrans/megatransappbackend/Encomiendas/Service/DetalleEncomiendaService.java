@@ -18,6 +18,7 @@ import com.megatrans.megatransappbackend.Security.repository.UsuarioRepository;
 import com.megatrans.megatransappbackend.Transporte_Mudanza.Entity.DetalleTransporte;
 import com.megatrans.megatransappbackend.Unidad.DTO.UnidadDTO;
 import com.megatrans.megatransappbackend.Unidad.Entity.Unidad;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -173,7 +174,6 @@ public class DetalleEncomiendaService {
         // Convertir y devolver el DTO correspondiente
         return convertirADetalleEncomiendaDTO(detalleEncomienda);
     }
-
     // Actualizar el estado de una encomienda por numGuia
     @Transactional
     public DetalleEncomiendaDTO actualizarEstadoPorNumGuia(String numGuia, DetalleEncomiendaDTO.EstadoEncomienda nuevoEstado) {
@@ -352,5 +352,12 @@ public class DetalleEncomiendaService {
         unidadDTO.setTipo_cajon(unidad.getTipo_cajon());
         unidadDTO.setImagenUrl(unidad.getImagenUrl());
         return unidadDTO;
+    }
+
+    public List<DetalleEncomiendaDTO> getDetalleEncomiendaByLoteId(Integer loteId) {
+        return detalleEncomiendaRepository.findByLoteId(loteId)
+                .stream()
+                .map(this::convertirADetalleEncomiendaDTO)
+                .collect(Collectors.toList());
     }
 }

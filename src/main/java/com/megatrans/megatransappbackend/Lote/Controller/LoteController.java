@@ -1,10 +1,12 @@
 package com.megatrans.megatransappbackend.Lote.Controller;
 
+import com.lowagie.text.DocumentException;
 import com.megatrans.megatransappbackend.Lote.DTO.LoteDTO;
 import com.megatrans.megatransappbackend.Lote.Entity.Lote;
 import com.megatrans.megatransappbackend.Lote.Repository.LoteRepository;
 import com.megatrans.megatransappbackend.Lote.Service.LoteService;
 import com.megatrans.megatransappbackend.Reportes.ExcelServiceLot;
+import com.megatrans.megatransappbackend.Reportes.PDFReportServiceLot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,8 @@ public class LoteController {
     private ExcelServiceLot excelServiceLot;
     @Autowired
     private LoteRepository loteRepository;
+    @Autowired
+    private PDFReportServiceLot pdfReportServiceLot;
 
     @PostMapping
     public ResponseEntity<Lote> crearLote(@RequestBody LoteDTO loteDTO) {
@@ -99,6 +103,13 @@ public class LoteController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+    @GetMapping("/pdf/{loteId}")
+    public ResponseEntity<byte[]> generarReporte(@PathVariable Integer loteId) throws IOException, DocumentException {
+        byte[] pdfBytes = pdfReportServiceLot.generarReportePdfLote(loteId);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=Reporte_Lote_" + loteId + ".pdf")
+                .body(pdfBytes);
     }
 
 }
