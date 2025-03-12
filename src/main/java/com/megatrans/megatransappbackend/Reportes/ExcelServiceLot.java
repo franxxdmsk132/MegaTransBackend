@@ -1,17 +1,31 @@
 package com.megatrans.megatransappbackend.Reportes;
 
+import com.lowagie.text.*;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
+import com.megatrans.megatransappbackend.Encomiendas.DTO.DetalleEncomiendaDTO;
 import com.megatrans.megatransappbackend.Encomiendas.Entity.DetalleEncomienda;
+import com.megatrans.megatransappbackend.Encomiendas.Entity.Producto;
+import com.megatrans.megatransappbackend.Encomiendas.Service.DetalleEncomiendaService;
 import com.megatrans.megatransappbackend.Lote.Entity.Lote;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 @Service
 public class ExcelServiceLot {
+    @Autowired
+    private DetalleEncomiendaService detalleEncomiendaService;
 
     public byte[] generarReporteExcelLote(List<Lote> lotes) throws IOException {
         Workbook workbook = new XSSFWorkbook();
@@ -35,7 +49,8 @@ public class ExcelServiceLot {
         headerRow.createCell(5).setCellValue("Unidad");
         headerRow.createCell(6).setCellValue("Ruta");
         headerRow.createCell(7).setCellValue("Guías Relacionadas");
-        headerRow.createCell(8).setCellValue("Conteo de Guías"); // Nueva columna para el conteo
+        headerRow.createCell(8).setCellValue("Conteo de Guías");
+        headerRow.createCell(9).setCellValue("Detalles de Encomienda"); // Nueva columna para los detalles de la encomienda
 
         // Establecer el formato de fecha
         CellStyle dateCellStyle = workbook.createCellStyle();
@@ -47,6 +62,7 @@ public class ExcelServiceLot {
         // Llenar las filas con los datos de los lotes
         for (Lote lote : lotes) {
             Row row = sheet.createRow(rowNum++);
+
             row.createCell(0).setCellValue(lote.getId());
             row.createCell(1).setCellValue(lote.getNumLote());
             Cell fechaCell = row.createCell(2);
@@ -54,7 +70,7 @@ public class ExcelServiceLot {
             fechaCell.setCellStyle(dateCellStyle);
             row.createCell(3).setCellValue(lote.getEstado());
             row.createCell(4).setCellValue(lote.getEncargado());
-            row.createCell(5).setCellValue(lote.getUnidad().getTipo());  // Asumiendo que la unidad tiene un nombre
+            row.createCell(5).setCellValue(lote.getUnidad().getTipo());
             row.createCell(6).setCellValue(lote.getRuta());
 
             // Obtener los números de guía de los DetalleEncomienda asociados al Lote
@@ -69,13 +85,35 @@ public class ExcelServiceLot {
             }
 
             row.createCell(7).setCellValue(guiaRelacionadas.toString());
+
             // Agregar el conteo de guías
             int conteoGuías = lote.getDetalleEncomiendas().size();
             row.createCell(8).setCellValue(conteoGuías);
+
+            // Obtener y mostrar los detalles de las encomiendas
+            StringBuilder detallesEncomienda = new StringBuilder();
+            for (DetalleEncomienda detalle : lote.getDetalleEncomiendas()) {
+                // Obtener el DTO usando el servicio
+                DetalleEncomiendaDTO encomiendaDTO = detalleEncomiendaService.getDetalleEncomiendaByNumGuia(detalle.getNumGuia());
+
+                // Utilizar el DTO para obtener la información
+                detallesEncomienda.append("Guía: ").append(encomiendaDTO.getNumGuia())
+                        .append(", Estado: ").append(encomiendaDTO.getEstado())
+                        .append(", Destinatario: ").append(encomiendaDTO.getNombreD())
+                        .append("; ");
+            }
+
+
+            // Eliminar la última coma y espacio
+            if (detallesEncomienda.length() > 0) {
+                detallesEncomienda.setLength(detallesEncomienda.length() - 2);
+            }
+
+            row.createCell(9).setCellValue(detallesEncomienda.toString());
         }
 
         // Ajustar el tamaño de las columnas
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 10; i++) {
             sheet.autoSizeColumn(i);
         }
 
