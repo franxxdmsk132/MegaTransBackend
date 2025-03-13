@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class DetalleEncomiendaDTO {
@@ -40,4 +41,14 @@ public class DetalleEncomiendaDTO {
     private EstadoEncomienda estado;
     private List<ProductoDTO> productosDto;
     private LoteDTO lote;
+
+    // Método para obtener los productos concatenados
+    public String getProductosConcatenados() {
+        return productosDto.stream()
+                .map(p -> p.getTipoProducto() + " (" + p.getPeso() + "kg, "
+                        + p.getAlto() + "x" + p.getAncho() + "x" + p.getLargo() + " cm, "
+                        + (p.isFragil() ? "Frágil" : "No Frágil") + ")")
+                .collect(Collectors.joining("\n"));
+    }
+
 }
