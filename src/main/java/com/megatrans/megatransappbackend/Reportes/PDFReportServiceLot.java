@@ -44,58 +44,99 @@ public class PDFReportServiceLot {
         PdfWriter.getInstance(document, outputStream);
         document.open();
 
-        // Agregar logo
-        try {
-            Image logo = Image.getInstance("http://localhost:8080/qr_codes/MegaTransLogo.png"); // Cambiar ruta si es necesario
-            logo.scaleToFit(150, 50);
-            logo.setAlignment(Element.ALIGN_LEFT);
-            document.add(logo);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Título del documento
-        Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);
-        Paragraph title = new Paragraph("REPORTE DE LOTE: " + lote.getNumLote(), titleFont);
-        title.setAlignment(Element.ALIGN_CENTER);
-        document.add(title);
-        document.add(new Paragraph("\n"));
-
 
         // Obtener las encomiendas
         List<DetalleEncomiendaDTO> encomiendas = detalleEncomiendaService.getDetalleEncomiendaByLoteId(loteId);
+        int reportesPorPagina = 2; // Máximo de reportes por hoja
+        int contador = 0;
+
+        // Calcular el espacio disponible en la página
+        float pageHeight = PageSize.A4.getHeight() - document.topMargin() - document.bottomMargin();
+        float reporteHeight = 0;
+
         for (DetalleEncomiendaDTO encomiendaDTO : encomiendas) {
+            PdfPTable reportTable = new PdfPTable(2); // Dos columnas para organizar mejor
             PdfPTable table = new PdfPTable(4); // Usando dos columnas
-            table.setWidthPercentage(100); // Estableciendo que la tabla ocupe todo el ancho
-            table.setSpacingBefore(10f); // Espaciado antes de la tabla
-            table.setSpacingAfter(10f);  // Espaciado después de la tabla
+            table.setWidthPercentage(100f); // Estableciendo que la tabla ocupe todo el ancho
+            table.setSpacingBefore(20f); // Espaciado antes de la tabla
+            table.setSpacingAfter(20f);  // Espaciado después de la tabla
+
+
+//Fila1
+            // Crear una tabla de 2 columnas (Logo | QR)
+            PdfPTable headerTable = new PdfPTable(2);
+            headerTable.setWidthPercentage(100);
+            headerTable.setWidths(new float[]{80, 80}); // Columnas de igual tamaño
+            headerTable.getDefaultCell().setBorder(Rectangle.NO_BORDER); // Quitar bordes
+
+            try {
+                // Cargar logo
+                Image logo = Image.getInstance("http://localhost:8080/qr_codes/MegaTransLogo.png");
+                logo.scaleToFit(70f, 70f);
+
+                // Crear celda para el logo (sin bordes)
+                PdfPCell logoCell = new PdfPCell(logo);
+                logoCell.setBorder(Rectangle.NO_BORDER);
+                logoCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+                logoCell.setPadding(30f); // Espacio alrededor del logo
+
+                // Cargar código QR
+                String qrCodeUrl = "http://localhost:8080" + encomiendaDTO.getQrCodePath();
+                Image qrImage = Image.getInstance(new URL(qrCodeUrl));
+                qrImage.scaleToFit(70f, 70f);
+
+                // Crear celda para el código QR (sin bordes)
+                PdfPCell qrCell = new PdfPCell(qrImage);
+                qrCell.setBorder(Rectangle.NO_BORDER);
+                qrCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+                qrCell.setPadding(30f); // Espacio alrededor del QR
+
+                // Agregar las celdas a la tabla
+                headerTable.addCell(logoCell);
+                headerTable.addCell(qrCell);
+
+                // Agregar la tabla al documento
+                document.add(headerTable);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+//fila2
+//            // Título del documento
+//            PdfPTable singleRowTable2 = new PdfPTable(1);  // Tabla de una columna para esta fila
+//            singleRowTable1.setWidthPercentage(100);
+//            Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);Paragraph title = new Paragraph("REPORTE DE LOTE: " + lote.getNumLote(), titleFont);
+//            title.setAlignment(Element.ALIGN_CENTER);
+//            document.add(title);
+//            document.add(new Paragraph("\n"));
 
 // Información de la encomienda
 
-// Fila 1: N° Guía y N° Lote en una sola fila sin columnas
+// Fila 3: N° Guía y N° Lote en una sola fila sin columnas
             PdfPTable singleRowTable1 = new PdfPTable(1);  // Tabla de una columna para esta fila
             singleRowTable1.setWidthPercentage(100);
             String guiaYLote = "N° Guía: " + encomiendaDTO.getNumGuia() + "   N° Lote: " + lote.getNumLote();
             addTableRowSingleColumn(singleRowTable1, guiaYLote);
             document.add(singleRowTable1);
 
-// Fila 2: Fecha en una sola fila sin columnas
+// Fila 4: Fecha en una sola fila sin columnas
             PdfPTable singleRowTable2 = new PdfPTable(1);  // Tabla de una columna para esta fila
             singleRowTable2.setWidthPercentage(100);
             addTableRowSingleColumn(singleRowTable2, "Fecha: " + String.valueOf(encomiendaDTO.getFecha()));
             document.add(singleRowTable2);
 
-// Fila 3: Remitente y Identificación
+// Fila 5: Remitente y Identificación
             addTableRow(table, "Remitente:", encomiendaDTO.getUsuario().getNombre() + " " + encomiendaDTO.getUsuario().getApellido());
             addTableRow(table, "Identificación:", encomiendaDTO.getUsuario().getIdentificacion());
             String nombreComercial = encomiendaDTO.getUsuario().getNombreComercial();
             addTableRow(table, "Nombre Comercial:", (nombreComercial != null && !nombreComercial.isEmpty()) ? nombreComercial : "N/A");
 
-// Fila 5: Destinatario y su Identificación
+// Fila 6: Destinatario y su Identificación
             addTableRow(table, "Destinatario:", encomiendaDTO.getNombreD() + " " + encomiendaDTO.getApellidoD());
             addTableRow(table, "Identificación Destinatario:", encomiendaDTO.getIdentificacionD());
 
-// Fila 6: Dirección y Referencia
+// Fila 7: Dirección y Referencia
             addTableRow(table, "Dirección:", encomiendaDTO.getDirRemitente());
             addTableRow(table, "Referencia:", encomiendaDTO.getReferenciaD());
 
@@ -105,30 +146,31 @@ public class PDFReportServiceLot {
                     .collect(Collectors.joining("\n"));
             addTableRow(table, "Productos:", productosConcatenados);
 
+            PdfPTable qrTable = new PdfPTable(2);  // Tabla con dos columnas
+            qrTable.setWidthPercentage(100);
+            qrTable.setWidths(new float[]{70, 30}); // 70% para datos, 30% para el QR
 
-            // Agregar código QR
-            try {
-                String qrCodeUrl = "http://localhost:8080" + encomiendaDTO.getQrCodePath();
-                Image qrImage = Image.getInstance(new URL(qrCodeUrl));
-                qrImage.scaleToFit(100, 100);
-                PdfPCell qrCell = new PdfPCell(qrImage);
-                qrCell.setColspan(4);
-                qrCell.setPaddingTop(15f); // Agrega margen superior
-                qrCell.setPaddingBottom(5f); // Ajuste de espacio inferior
-                qrCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-                qrCell.setBorder(Rectangle.NO_BORDER);
-                table.addCell(qrCell);
-            } catch (Exception e) {
-                e.printStackTrace();
+            reporteHeight = reportTable.getTotalHeight();
+
+            // Verificar si el reporte cabe en la página
+            if (reporteHeight > pageHeight) {
+                document.newPage(); // Crear nueva página si no cabe el reporte
             }
-
             document.add(table);
             document.add(new Paragraph("\n"));
+        }
+        contador++;
+
+        // Si ya imprimimos 2 reportes, creamos una nueva página
+        if (contador % reportesPorPagina == 0) {
+            document.newPage();
         }
 
         document.close();
         return outputStream.toByteArray();
     }
+
+
 
     private void addTableRowSingleColumn(PdfPTable table, String value) {
         PdfPCell cell = new PdfPCell(new Phrase(value, new Font(Font.HELVETICA, 10)));
@@ -144,6 +186,41 @@ public class PDFReportServiceLot {
         cell2.setPadding(5);  // Espaciado dentro de la celda
         table.addCell(cell1);  // Agregar la celda de la etiqueta
         table.addCell(cell2);  // Agregar la celda del valor
+    }
+    private PdfPTable createLogoTable(String logoUrl) throws BadElementException, IOException {
+        // Crear tabla con 1 columna
+        PdfPTable logoTable = new PdfPTable(1);
+        logoTable.setWidthPercentage(100);  // Hacer que ocupe todo el ancho de la página
+
+        // Crear la imagen
+        Image logo = Image.getInstance(logoUrl);  // Usar URL o ruta local
+        logo.scaleToFit(100, 50);  // Ajustar tamaño de la imagen
+        logo.setAlignment(Element.ALIGN_LEFT);  // Alineación izquierda
+
+        // Crear celda para la imagen
+        PdfPCell logoCell = new PdfPCell(logo, true);
+        logoCell.setBorder(Rectangle.NO_BORDER);  // Sin borde
+        logoCell.setHorizontalAlignment(Element.ALIGN_LEFT);  // Alineación de la celda
+        logoCell.setPaddingBottom(10f);  // Espaciado en la parte inferior
+
+        // Agregar la celda con la imagen a la tabla
+        logoTable.addCell(logoCell);
+
+        return logoTable;
+    }
+
+
+    private PdfPTable createTitleTable(String titleText) {
+        PdfPTable titleTable = new PdfPTable(1);
+        titleTable.setWidthPercentage(100);
+
+        Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);
+        PdfPCell titleCell = new PdfPCell(new Phrase(titleText, titleFont));
+        titleCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        titleCell.setBorder(Rectangle.NO_BORDER);
+        titleTable.addCell(titleCell);
+
+        return titleTable;
     }
 
 }
