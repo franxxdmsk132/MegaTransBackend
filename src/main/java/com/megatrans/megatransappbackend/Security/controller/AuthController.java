@@ -35,10 +35,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -64,11 +61,12 @@ public class AuthController {
     JwtProvider jwtProvider;
 
     @GetMapping("/current")
-    public ResponseEntity<String> getCurrentVersion() {
-        // Suponemos que la versión actual de la app es "1.0.0"
-        String currentVersion = "1.0.0"; // Esto debe estar basado en tu lógica de versión
-        return ResponseEntity.ok(currentVersion);
+    public ResponseEntity<Map<String, String>> getCurrentVersion() {
+        Map<String, String> response = new HashMap<>();
+        response.put("version", "1.0.0"); // Versión de la app
+        return ResponseEntity.ok(response);
     }
+
 
     @GetMapping("/latest")
     public ResponseEntity<String> getLatestVersion() {
