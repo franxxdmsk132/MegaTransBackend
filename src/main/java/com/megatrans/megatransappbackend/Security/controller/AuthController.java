@@ -63,6 +63,21 @@ public class AuthController {
     @Autowired
     JwtProvider jwtProvider;
 
+    @GetMapping("/current")
+    public ResponseEntity<String> getCurrentVersion() {
+        // Suponemos que la versión actual de la app es "1.0.0"
+        String currentVersion = "1.0.0"; // Esto debe estar basado en tu lógica de versión
+        return ResponseEntity.ok(currentVersion);
+    }
+
+    @GetMapping("/latest")
+    public ResponseEntity<String> getLatestVersion() {
+        // La última versión disponible
+        String latestVersion = "1.1.0"; // Esta debería ser la versión más nueva
+        return ResponseEntity.ok(latestVersion);
+    }
+
+
     @PostMapping("/nuevo")
     public ResponseEntity<?> nuevo(
             @RequestParam String nombre,

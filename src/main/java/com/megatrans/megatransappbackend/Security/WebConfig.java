@@ -23,7 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("*") // Acepta cualquier origen
+                .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
@@ -36,8 +36,6 @@ public class WebConfig implements WebMvcConfigurer {
         String usersImgPath = Paths.get("usersimg").toAbsolutePath().toUri().toString();
         String qr_codes = Paths.get("qr_codes").toAbsolutePath().toUri().toString();
 
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations(uploadsPath);
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations(uploadsPath);
         registry.addResourceHandler("/qr_codes/**")
