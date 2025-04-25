@@ -101,8 +101,7 @@ public class AuthController {
 //        }
 
 
-
-        Usuario usuario = new Usuario(nombre, apellido, identificacion, telefono, nombreComercial,nombreUsuario, passwordEncoder.encode(password));
+        Usuario usuario = new Usuario(nombre, apellido, identificacion, telefono, nombreComercial, nombreUsuario, passwordEncoder.encode(password));
 
         // Asignar el rol basado en el parámetro 'roles'
         Set<Rol> rolesAsignados = new HashSet<>();
@@ -129,10 +128,10 @@ public class AuthController {
             @RequestParam("telefono") String telefono,
             @RequestParam("nombreComercial") String nombre_comercial,
             @RequestParam("nombreUsuario") String nombreUsuario,
-            @RequestParam("password")  String password
+            @RequestParam("password") String password
 
 
-            ) {
+    ) {
 
         // Validaciones manuales
         if (nombre.isEmpty() || apellido.isEmpty() || identificacion.isEmpty() || telefono.isEmpty() || nombreUsuario.isEmpty() || password.isEmpty()) {
@@ -145,7 +144,7 @@ public class AuthController {
 
 
         // Crear el usuario con los datos proporcionados y la URL de la imagen
-        Usuario usuario = new Usuario(nombre, apellido, identificacion, telefono,nombre_comercial, nombreUsuario, passwordEncoder.encode(password));
+        Usuario usuario = new Usuario(nombre, apellido, identificacion, telefono, nombre_comercial, nombreUsuario, passwordEncoder.encode(password));
 
         // Asignar el rol de empleado
         Set<Rol> roles = new HashSet<>();
@@ -216,8 +215,16 @@ public class AuthController {
         }
     }
 
+    @PreAuthorize("permitAll()")
+    @PostMapping("/saveTokenFMC")
+    @ResponseStatus(HttpStatus.OK)
+    public void saveTokenFMC(@RequestParam String tokenFMC,
+                             @RequestParam String username) {
+        Usuario usuario = usuarioService.getByNombreUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-
+        usuarioService.saveTokenFMC(usuario, tokenFMC);
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/empleados")
@@ -368,8 +375,7 @@ public class AuthController {
     }
 
 
-
-//    // Método para guardar la imagen en el servidor
+    //    // Método para guardar la imagen en el servidor
 //    private String guardarImagenUsuario(MultipartFile imagen) {
 //        try {
 //            String nombreArchivo = System.currentTimeMillis() + "_" + imagen.getOriginalFilename();
@@ -381,37 +387,37 @@ public class AuthController {
 //            throw new RuntimeException("Error al guardar la imagen", e);
 //        }
 //    }
-@PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('EMPL')")
-@PutMapping("/changePass/{username}")
-public ResponseEntity<?> cambiarContrasena(
-        @PathVariable String username,
-        @RequestBody Map<String, String> requestBody // Se recibe un JSON con password y newPassword
-) {
-    String password = requestBody.get("password");
-    String newPassword = requestBody.get("newPassword");
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('EMPL')")
+    @PutMapping("/changePass/{username}")
+    public ResponseEntity<?> cambiarContrasena(
+            @PathVariable String username,
+            @RequestBody Map<String, String> requestBody // Se recibe un JSON con password y newPassword
+    ) {
+        String password = requestBody.get("password");
+        String newPassword = requestBody.get("newPassword");
 
-    if (password == null || newPassword == null || password.isEmpty() || newPassword.isEmpty()) {
-        return new ResponseEntity<>(new Mensaje("Las contraseñas no pueden estar vacías"), HttpStatus.BAD_REQUEST);
+        if (password == null || newPassword == null || password.isEmpty() || newPassword.isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("Las contraseñas no pueden estar vacías"), HttpStatus.BAD_REQUEST);
+        }
+
+        Usuario usuario = usuarioService.getByNombreUsuario(username).orElse(null);
+        if (usuario == null) {
+            return new ResponseEntity<>(new Mensaje("Usuario no encontrado"), HttpStatus.NOT_FOUND);
+        }
+
+        if (!passwordEncoder.matches(password, usuario.getPassword())) {
+            return new ResponseEntity<>(new Mensaje("Contraseña actual incorrecta"), HttpStatus.FORBIDDEN);
+        }
+
+        if (newPassword.length() < 6) {
+            return new ResponseEntity<>(new Mensaje("La nueva contraseña debe tener al menos 6 caracteres"), HttpStatus.BAD_REQUEST);
+        }
+
+        usuario.setPassword(passwordEncoder.encode(newPassword));
+        usuarioService.save(usuario);
+
+        return new ResponseEntity<>(new Mensaje("Contraseña actualizada con éxito"), HttpStatus.OK);
     }
-
-    Usuario usuario = usuarioService.getByNombreUsuario(username).orElse(null);
-    if (usuario == null) {
-        return new ResponseEntity<>(new Mensaje("Usuario no encontrado"), HttpStatus.NOT_FOUND);
-    }
-
-    if (!passwordEncoder.matches(password, usuario.getPassword())) {
-        return new ResponseEntity<>(new Mensaje("Contraseña actual incorrecta"), HttpStatus.FORBIDDEN);
-    }
-
-    if (newPassword.length() < 6) {
-        return new ResponseEntity<>(new Mensaje("La nueva contraseña debe tener al menos 6 caracteres"), HttpStatus.BAD_REQUEST);
-    }
-
-    usuario.setPassword(passwordEncoder.encode(newPassword));
-    usuarioService.save(usuario);
-
-    return new ResponseEntity<>(new Mensaje("Contraseña actualizada con éxito"), HttpStatus.OK);
-}
 
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('EMPL')")
@@ -447,6 +453,7 @@ public ResponseEntity<?> cambiarContrasena(
         String mensaje = "Hola SSL";
         return ResponseEntity.ok(mensaje);
     }
+
     // Endpoint para obtener el conteo de usuarios
     @GetMapping("/count")
     public long getUsuariosCount() {

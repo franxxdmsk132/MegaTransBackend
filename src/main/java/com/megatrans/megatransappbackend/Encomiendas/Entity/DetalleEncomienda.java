@@ -56,5 +56,8 @@ public class DetalleEncomienda {
     @ManyToOne
     @JoinColumn(name = "lote_id")
     private Lote lote;
+
+    @ManyToOne(targetEntity = EstadoEncomienda.class)
+    private EstadoEncomienda estadoEncomienda;
 }
 

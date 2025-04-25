@@ -19,6 +19,12 @@ target/
 *.iml
 *.ipr
 
+### QR Code ###
+/qr_codes/**
+
+### Firebase FCM ###
+/src/main/resources/firebase/**
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

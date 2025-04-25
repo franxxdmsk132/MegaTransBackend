@@ -51,6 +51,7 @@ public class MainSecurity {
                         .requestMatchers("/empl/**").hasRole("EMPL") // Rutas para empleados
                         .requestMatchers("/uploads/**").permitAll() // Rutas públicas para subidas
                         .requestMatchers("/qr_codes/**").permitAll() // Rutas públicas para subidas
+                        .requestMatchers("/ws/**").permitAll()
 
                         .anyRequest().authenticated() // Todas las demás requieren autenticación
                 )

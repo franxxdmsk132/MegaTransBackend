@@ -24,6 +24,8 @@ public class Usuario {
 
     private String nombreComercial;
 
+    private String tokenFMC;
+
 
     @NotNull
     @Column(unique = true)
@@ -82,6 +84,13 @@ public class Usuario {
         this.nombreUsuario = nombreUsuario;
     }
 
+    public String getTokenFMC() {
+        return tokenFMC;
+    }
+
+    public void setTokenFMC(String tokenFMC) {
+        this.tokenFMC = tokenFMC;
+    }
 
     public String getPassword() {
         return password;
