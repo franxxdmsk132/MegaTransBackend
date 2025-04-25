@@ -48,6 +48,11 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
+    public void saveTokenFMC(Usuario usuario, String tokenFMC){
+        usuario.setTokenFMC(tokenFMC);
+        usuarioRepository.save(usuario);
+    }
+
     public void deleteById(Integer id){
         usuarioRepository.deleteById(id);
     }
