@@ -14,7 +14,14 @@ public class EstadoEncomiendaDTO {
     private Integer encomienda;
     private Boolean estado;
     private String username;
+    private String ruta;
+    private String numGuia;
+    private Double latitudOrg;
+    private Double longitudOrg;
+    private Double latitudDestino;
+    private Double longitudDestino;
     private String email;
+    private String telf;
     private String fechaCreacion;
 
     public String toJson() {

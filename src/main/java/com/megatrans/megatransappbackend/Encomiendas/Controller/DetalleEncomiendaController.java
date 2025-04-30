@@ -62,7 +62,7 @@ public class DetalleEncomiendaController {
         DetalleEncomiendaDTO detalleEncomiendaDTO = detalleEncomiendaService.getDetalleEncomiendaByNumGuia(numGuia);
         return ResponseEntity.ok(detalleEncomiendaDTO);
     }
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPL', 'DESP')")
     @PutMapping("/{id}")
     public ResponseEntity<String> actualizarEstado(@PathVariable Integer id, @RequestBody DetalleEncomienda estado) {
         boolean actualizado = detalleEncomiendaService.actualizarEstado(id, estado.getEstado());
@@ -99,10 +99,12 @@ public class DetalleEncomiendaController {
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
         boolean isEmpleado = authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_EMPL"));
+        boolean isDespachador = authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_DESP"));
 
         List<DetalleEncomiendaDTO> encomiendasDTO;
 
-        if (isAdmin || isEmpleado) {
+        if (isAdmin || isEmpleado || isDespachador) {
             // Si es ADMIN o EMPLEADO, obtener todas las encomiendas
             encomiendasDTO = detalleEncomiendaService.obtenerTodasEncomiendas();
         } else {

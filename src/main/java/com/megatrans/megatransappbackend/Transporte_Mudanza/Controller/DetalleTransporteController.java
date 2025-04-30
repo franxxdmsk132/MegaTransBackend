@@ -163,7 +163,7 @@ public class DetalleTransporteController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPL', 'DESP')")
     @PutMapping("/{id}")
     public ResponseEntity<String> actualizarEstado(@PathVariable Long id, @RequestBody DetalleTransporte estado) {
         boolean actualizado = detalleTransporteService.actualizarEstado(id, estado.getEstado());
@@ -201,10 +201,12 @@ public class DetalleTransporteController {
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
         boolean isEmpleado = authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_EMPL"));
+        boolean isDespachador = authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_DESP"));
 
         List<DetalleTransporte> detalles;
 
-        if (isAdmin || isEmpleado) {
+        if (isAdmin || isEmpleado || isDespachador) {
             // Si es ADMIN o EMPLEADO, obtener todos los detalles
             detalles = detalleTransporteService.listar();
         } else {

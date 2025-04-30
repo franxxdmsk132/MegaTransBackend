@@ -19,7 +19,7 @@ public class DetalleTransporteDTO {
         EFECTIVO, TRANSFERENCIA
     }
     public enum TipoServicio{
-        MERCADERIA,DISTRIBUCION,MUDANZA
+        MERCADERIA,DISTRIBUCION,MUDANZA,GRUA
     }
 
     private Integer cantidadEstibaje;
