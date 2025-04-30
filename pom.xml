@@ -171,11 +171,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>com.MegaTrans</groupId>
             <artifactId>MegaTransApp-BackEnd</artifactId>
             <version>0.0.1</version>
-        </dependency>
+        </dependency> -->
     </dependencies>
 
     <build>
