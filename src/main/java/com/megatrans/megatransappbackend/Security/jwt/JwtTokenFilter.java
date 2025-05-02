@@ -36,7 +36,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         try {
             String token = getToken(req);
-            if(token != null && jwtProvider.validateToken(token)){
+            if (token != null && jwtProvider.validateToken(token)) {
                 String nombreUsuario = jwtProvider.getNombreUsuarioFromToken(token);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(nombreUsuario);
 
@@ -45,18 +45,21 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 auth.setDetails(new WebAuthenticationDetails(req));
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error("fail en el método doFilter " + e.getMessage());
         }
 
         filterChain.doFilter(req, res);
     }
 
-    private String getToken(HttpServletRequest request){
+    private String getToken(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-        if(header != null && header.startsWith("Bearer"))
-            return header.replace("Bearer ", "");
+        if (header != null && header.startsWith("Bearer ")) {
+            String token = header.substring(7); // Corta después de "Bearer "
+            return token.isBlank() ? null : token; // Verifica que no esté vacío
+        }
         return null;
     }
+
 }
 
