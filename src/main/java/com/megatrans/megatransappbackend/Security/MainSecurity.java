@@ -69,7 +69,7 @@ public class MainSecurity {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("https:/2f70-45-236-151-3.ngrok-free.app");
+        configuration.addAllowedOrigin("https://2f70-45-236-151-3.ngrok-free.app");
         configuration.addAllowedOrigin("http://localhost:4200");
         configuration.addAllowedOrigin("http://localhost"); // Permitir origen del frontend
         configuration.addAllowedMethod("*"); // Permitir todos los métodos HTTP
